@@ -1,0 +1,495 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+  .wishlist-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #ccc;
+  transition: color 0.3s ease;
+}
+
+.wishlist-btn.wishlist-active {
+  color: red;
+}
+
+.wishlist-btn:hover {
+  color: red;
+}
+.wishlist-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #ccc;
+  transition: color 0.3s ease;
+}
+
+.wishlist-btn.wishlist-active {
+  color: red;
+}
+
+.wishlist-btn:hover {
+  color: red;
+}
+</style>
+<style>
+  /* Watch Banner Styles */
+  .watch-banner {
+    background-color: #000;
+    color: #fff;
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .banner-content {
+    display: inline-block;
+    animation: scrollBanner 20s linear infinite;
+  }
+
+  .banner-content span {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 40px;
+    position: relative;
+  }
+
+  /* Animation for Scrolling */
+  @keyframes scrollBanner {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* Pause on Hover */
+  .watch-banner:hover .banner-content {
+    animation-play-state: paused;
+  }
+</style>
+<!-- Hero Section Begin -->
+ <!-- Watch Brand Banner -->
+<div class="watch-banner">
+  <div class="banner-content">
+    <span>Rolex</span>
+    <span>Omega</span>
+    <span>Tag Heuer</span>
+    <span>Patek Philippe</span>
+    <span>Audemars Piguet</span>
+  </div>
+</div>
+<section class="hero">
+  <div class="hero__slider owl-carousel">
+    <div class="hero__items set-bg" data-setbg="bann.avif">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-5 col-lg-7 col-md-8">
+            <div class="hero__text">
+              <h6>Summer Collection</h6>
+              <h2>Fall - Winter Collections 2030</h2>
+              <p>
+                A specialist label creating luxury essentials. Ethically crafted
+                with an unwavering commitment to exceptional quality.
+              </p>
+              <a href="/shopPage" class="primary-btn"
+                >Shop now <span class="arrow_right"></span
+              ></a>
+              <div class="hero__social">
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-twitter"></i></a>
+                <a href="#"><i class="fa fa-pinterest"></i></a>
+                <a href="#"><i class="fa fa-instagram"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero__items set-bg" data-setbg="img/hero/hero-2.jpg">
+      <div class="container">
+        <div class="row">
+          <div class="col-xl-5 col-lg-7 col-md-8">
+            <div class="hero__text">
+              <h6>Summer Collection</h6>
+              <h2>Fall - Winter Collections 2030</h2>
+              <p>
+                A specialist label creating luxury essentials. Ethically crafted
+                with an unwavering commitment to exceptional quality.
+              </p>
+              <a href="#" class="primary-btn"
+                >Shop now <span class="arrow_right"></span
+              ></a>
+              <div class="hero__social">
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-twitter"></i></a>
+                <a href="#"><i class="fa fa-pinterest"></i></a>
+                <a href="#"><i class="fa fa-instagram"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Hero Section End -->
+
+<div class="row">
+  <div class="col-lg-12">
+    <div class="section-title">
+      <h2>Latest Collection</h2>
+    </div>
+  </div>
+</div>
+
+
+
+<section class="product spad">
+  <div class="container">
+    <div class="row product__filter">
+      <% product.forEach(product => { %>
+      <div class="col-lg-3 col-md-6 col-sm-6 mix new-arrivals">
+        <div class="product__item">
+          <div
+            class="product__item__pic set-bg <%= product.stockQuantity === 0 ? 'blurred' : '' %>"
+            data-setbg="<%= product.image[0] %>"
+          >
+            <!-- Wishlist Button -->
+            <button 
+              class="wishlist-btn <%= product.wishlisted ? 'wishlist-active' : '' %>" 
+              data-product-id="<%= product._id %>"
+              onclick="toggleWishlist('<%= product._id %>')"
+            >
+              <i class="fa fa-heart"></i>
+            </button>
+            <% if (product.stockQuantity === 0) { %>
+           
+            <% } %>
+            <ul class="product__hovr">
+              <li>
+                <a href="/productDetails/<%= product._id %>"
+                  ><img src="<%= product.image[0] %>" alt=""
+                /></a>
+              </li>
+            </ul>
+          </div>
+          <div class="product__item__text">
+            <h6><%= product.productName %></h6>
+            <% if (product.stockQuantity === 0) { %>
+            <a href="#" class="out-of-stock-button" disabled>Out of Stock</a>
+            <% } else { %>
+            <a href="#" class="add-cart" data-product-id="<%= product._id %>"
+              >+ Add To Cart</a
+            >
+            <% } %>
+            <div class="rating">
+              <% const rating = Math.round(product.averageRating || 0); %> <%
+              for (let i = 0; i < 5; i++) { %>
+              <i class="fa <%= i < rating ? 'fa-star' : 'fa-star-o' %>"></i>
+              <% } %>
+            </div>
+            <div class="fw-bold">
+              <% 
+              // Ensure values are numbers
+              const discountPrice = Number(product.discountprice) || 0;
+              const categoryDiscountPrice = Number(product.categoryDiscountprice) || 0;
+              const originalPrice = Number(product.price) || 0;
+              %>
+              
+              <% if (discountPrice > 0 && (categoryDiscountPrice === 0 || discountPrice < categoryDiscountPrice)) { %>
+                <span class="text-primary">₹<%= discountPrice %></span>
+                <span class="old-price" style="text-decoration: line-through; color: gray;">
+                  ₹<%= originalPrice %>
+                </span>
+                <span class="discount-percentage" style="color: #32CD32; font-weight: bold;">
+                  <%= Math.round((originalPrice - discountPrice) / originalPrice * 100) %>% off
+                </span>
+              
+              <% } else if (categoryDiscountPrice > 0 && (discountPrice === 0 || categoryDiscountPrice < discountPrice)) { %>
+                <span class="text-primary">₹<%= categoryDiscountPrice %></span>
+                <span class="old-price" style="text-decoration: line-through; color: gray;">
+                  ₹<%= originalPrice %>
+                </span>
+                <span class="discount-percentage" style="color: #32CD32; font-weight: bold;">
+                  <%= Math.round((originalPrice - categoryDiscountPrice) / originalPrice * 100) %>% off
+                </span>
+              
+              <% } else { %>
+                <span class="text-primary">₹<%= originalPrice %></span>
+              <% } %>
+            </div>
+            <% if (product.stockQuantity === 0) { %>
+            <p class="out-of-stock" style="color: red">Out of Stock</p>
+            <% } else if (product.stockQuantity <= 5) { %>
+            <p class="few-left" style="color: orange">
+              Only <%= product.stockQuantity %> left!
+            </p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<!-- Product Section End -->
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Updated SweetAlert2 CSS -->
+<style>
+  /* Improved wishlist button styles */
+  .wishlist-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.7);
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    z-index: 10;
+  }
+
+  .wishlist-btn.wishlist-active {
+    color: #ff4757;
+    transform: scale(1.1);
+  }
+
+  .wishlist-btn:hover {
+    color: #ff4757;
+    transform: scale(1.1);
+  }
+
+  /* Enhanced alert styles */
+  .wishlist-alert {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+    padding: 0.8em !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(5px) !important;
+    border: 1px solid rgba(220, 220, 220, 0.5) !important;
+  }
+  
+  .wishlist-alert .swal2-icon {
+    margin: 0.3em 0.3em 0.3em 0 !important;
+    transform: scale(0.8) !important;
+  }
+  
+  .wishlist-alert .swal2-title {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 1em !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+  }
+
+  /* Wishlist animation */
+  @keyframes heartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .heart-beat {
+    animation: heartBeat 0.8s;
+  }
+</style>
+
+<!-- Updated JavaScript for Wishlist Functionality -->
+<script>
+ async function toggleWishlist(productId) {
+  const wishlistButton = document.querySelector(`.wishlist-btn[data-product-id="${productId}"]`);
+  
+  wishlistButton.classList.add('heart-beat');
+  setTimeout(() => {
+    wishlistButton.classList.remove('heart-beat');
+  }, 800);
+
+  try {
+    const response = await fetch('/wishlist/toggle', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ productId }),
+    });
+
+    const result = await response.json();
+
+    if (response.status === 401) {
+      window.location.href = '/login';
+      return;
+    }
+
+    if (result.success) {
+      const isAdding = !wishlistButton.classList.contains('wishlist-active');
+      
+      if (isAdding) {
+        wishlistButton.classList.add('wishlist-active');
+        showWishlistAlert('success', 'Added to Wishlist', 'top-end');
+      } else {
+        wishlistButton.classList.remove('wishlist-active');
+        showWishlistAlert('info', 'Removed from Wishlist', 'top-end');
+      }
+
+      // Update the wishlist count in the header
+      updateWishlistCount(result.wishlistCount);
+    } else {
+      showWishlistAlert('error', result.message || 'Something went wrong!', 'top-end');
+    }
+  } catch (error) {
+    console.error('Error toggling wishlist:', error);
+    showWishlistAlert('error', 'Please Login First', 'top-end');
+  }
+}
+
+// Function to update wishlist count in the header
+function updateWishlistCount(count) {
+  const wishlistCountElement = document.querySelector('.nav-icon-wrapper[href="/wishlist"] .item-count');
+  if (wishlistCountElement) {
+    wishlistCountElement.textContent = count;
+    wishlistCountElement.style.display = count > 0 ? 'flex' : 'none'; // Show/hide based on count
+  } else if (count > 0) {
+    // If no count element exists and count > 0, create it
+    const wishlistIconContainer = document.querySelector('.nav-icon-wrapper[href="/wishlist"] .icon-container');
+    if (wishlistIconContainer) {
+      const newCountElement = document.createElement('span');
+      newCountElement.className = 'item-count';
+      newCountElement.textContent = count;
+      wishlistIconContainer.appendChild(newCountElement);
+    }
+  }
+}
+
+  function showWishlistAlert(icon, title, position) {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: position,
+      width: '300px',
+      showConfirmButton: false,
+      timer: 2000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+      },
+      customClass: {
+        popup: 'wishlist-alert'
+      }
+    });
+
+    let iconColor;
+    switch(icon) {
+      case 'success':
+        iconColor = '#28a745';
+        break;
+      case 'info':
+        iconColor = '#17a2b8';
+        break;
+      case 'error':
+        iconColor = '#dc3545';
+        break;
+      default:
+        iconColor = '#007bff';
+    }
+
+    Toast.fire({
+      icon: icon,
+      title: title,
+      iconColor: iconColor
+    });
+  }
+
+  // Initialize wishlist buttons once the DOM is loaded
+  document.addEventListener('DOMContentLoaded', function() {
+    // Apply hover effect to product items to show wishlist button clearly
+    const productItems = document.querySelectorAll('.product__item');
+    productItems.forEach(item => {
+      item.addEventListener('mouseenter', function() {
+        const wishlistBtn = this.querySelector('.wishlist-btn');
+        if (wishlistBtn) {
+          wishlistBtn.style.opacity = '1';
+        }
+      });
+      
+      item.addEventListener('mouseleave', function() {
+        const wishlistBtn = this.querySelector('.wishlist-btn');
+        if (wishlistBtn && !wishlistBtn.classList.contains('wishlist-active')) {
+          wishlistBtn.style.opacity = '0.7';
+        }
+      });
+    });
+  });
+</script>
+<!-- Product Section End -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script>
+ // Function to handle "Add to Cart" click event
+ document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.add-cart').forEach(button => {
+    button.addEventListener('click', async function(event) {
+      event.preventDefault();
+      const productId = this.getAttribute('data-product-id');
+
+      try {
+        const response = await fetch('/add-to-cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ productId: productId }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showWishlistAlert('success', 'Added to Cart', 'top-end');
+          // Update the cart count in the header
+          updateCartCount(result.cartCount);
+        } else {
+          showWishlistAlert('error', result.message || 'Something went wrong!', 'top-end');
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        showWishlistAlert('error', 'Connection error. Please try again.', 'top-end');
+      }
+    });
+  });
+});
+
+// Function to update cart count in the header
+function updateCartCount(count) {
+  const cartCountElement = document.querySelector('.nav-icon-wrapper[href="/cart"] .item-count');
+  if (cartCountElement) {
+    cartCountElement.textContent = count;
+    cartCountElement.style.display = count > 0 ? 'flex' : 'none'; // Show/hide based on count
+  } else if (count > 0) {
+    // If no count element exists and count > 0, create it
+    const cartIconContainer = document.querySelector('.nav-icon-wrapper[href="/cart"] .icon-container');
+    if (cartIconContainer) {
+      const newCountElement = document.createElement('span');
+      newCountElement.className = 'item-count';
+      newCountElement.textContent = count;
+      cartIconContainer.appendChild(newCountElement);
+    }
+  }
+}
+</script>
+<%- include("../../views/partials/user/footer") %>

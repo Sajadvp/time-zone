@@ -1,0 +1,170 @@
+<%- include("../../views/partials/admin/header1") %>
+<%- include("../../views/partials/admin/sidebar1") %>
+<%- include("../../views/partials/admin/navbar1") %>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .badge {
+        padding: 0.5em 0.75em;
+        font-size: 0.85em;
+        font-weight: 500;
+    }
+
+    .badge-warning { background-color: #ffc107; color: #000; }
+    .badge-info { background-color: #17a2b8; color: #fff; }
+    .badge-primary { background-color: #007bff; color: #fff; }
+    .badge-success { background-color: #28a745; color: #fff; }
+    .badge-danger { background-color: #dc3545; color: #fff; }
+</style>
+
+<div class="container px-4 py-5">
+    <h1 class="mb-4">Return Orders</h1>
+    
+    <div class="card shadow">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Return Request Date</th>
+                            <th>Customer Email</th>
+                            <th>Status</th>
+                            <th>Total Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(returnRequests.length == 0) { %>
+                            <tr>
+                                <td colspan="6" class="text-center py-4">
+                                    <div class="alert alert-info mb-0">
+                                        No return requests found
+                                    </div>
+                                </td>
+                            </tr>
+                        <% } else { %>
+                            <% returnRequests.forEach(request => { %>
+                                <tr>
+                                    <td>#<%= request.orderId?._id?.toString()?.slice(-6)?.toUpperCase() %></td>
+                                    <td><%= request.createdAt.toLocaleString() %></td>
+                                    <td><%= request.userId.email %></td>
+                                    <td>
+                                        <span class="badge 
+                                            <%= request.status === 'Pending' ? 'badge-warning' : '' %>
+                                            <%= request.status === 'Approved' ? 'badge-success' : '' %>
+                                            <%= request.status === 'Rejected' ? 'badge-danger' : '' %>">
+                                            <%= request.status %>
+                                        </span>
+                                    </td>
+                                    <td>₹<%= request?.orderId?.totalAmount %></td>
+                                    <td>
+                                        <% if (request.status === 'Pending') { %>
+                                            <a href="/admin/return/approve/<%= request._id %>" 
+                                               class="btn btn-sm btn-outline-success">
+                                                Approve
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" 
+                                                    onclick="openRejectModal('<%= request._id %>')">
+                                                Reject
+                                            </button>
+                                        <% } else { %>
+                                            <span class="text-muted">No actions available</span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <% if (currentPage > 1) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            <% } %>
+            
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                    <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                    <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            <% } %>
+        </ul>
+    </nav>
+</div>
+<!-- Reject Modal -->
+<div id="rejectModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Return Request</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="rejectForm">
+                    <input type="hidden" id="rejectRequestId">
+                    <div class="form-group">
+                        <label for="rejectReason">Rejection Reason</label>
+                        <textarea class="form-control" id="rejectReason" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Include Bootstrap JS -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function openRejectModal(requestId) {
+        document.getElementById('rejectRequestId').value = requestId;
+        $('#rejectModal').modal('show'); // This will now work
+    }
+
+    document.getElementById('rejectForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const requestId = document.getElementById('rejectRequestId').value;
+        const rejectReason = document.getElementById('rejectReason').value;
+
+        const response = await fetch('/admin/return/reject', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ requestId, rejectReason })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Return request rejected successfully!');
+            location.reload();
+        } else {
+            alert('Error rejecting return request.');
+        }
+    });
+</script>
+
+<%- include("../../views/partials/admin/footer1") %>

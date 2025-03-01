@@ -1,0 +1,360 @@
+<%- include("../../views/partials/admin/header1") %>
+<%- include("../../views/partials/admin/sidebar1") %>
+<%- include("../../views/partials/admin/navbar1") %>
+
+<div class="container-fluid px-4 py-4">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Order Details</h4>
+            <span class="order-id-badge">#<%= order._id.toString().slice(-6).toUpperCase() %></span>
+        </div>
+        
+        <div class="card-body">
+            <!-- Order Meta -->
+            <div class="row mb-4 g-4">
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <div class="info-item">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            <strong>Order Date:</strong> <%= order.orderDate %>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-user me-2"></i>
+                            <strong>Customer Email:</strong> <%= order.userEmail %>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="info-card">
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt me-2"></i>
+                            <strong>Shipping Address:</strong> 
+                            <div class="text-muted"><%= order.address %></div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-credit-card me-2"></i>
+                            <strong>Payment Method:</strong> 
+                            <span class="badge payment-badge" style="background-color: black; color: white;"><%= order.paymentMethod %></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ordered Products -->
+            <h5 class="mb-3 section-title">
+                <i class="fas fa-box-open me-2"></i>
+                Ordered Products (<%= order.items.length %>)
+            </h5>
+            <div class="row g-4">
+                <% order.items.forEach(item => { %>
+                    <div class="col-md-6">
+                        <div class="product-card card h-100">
+                            <div class="row g-0 h-100">
+                                <div class="col-md-4 product-image-container">
+                                    <% if(item.image) { %>
+                                        <img src="<%= item.image %>" class="img-fluid rounded-start" alt="<%= item.productName %>">
+                                    <% } else { %>
+                                        <div class="no-image-placeholder">
+                                            <i class="fas fa-image fa-3x text-muted"></i>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body d-flex flex-column h-100">
+                                        <h6 class="card-title"><%= item.productName %></h6>
+                                        
+                                        <div class="price-section mb-3">
+                                            <div class="current-price">
+                                                ₹<%= item.discountedPrice %>
+                                                <% if(item.price > item.discountedPrice) { %>
+                                                    <span class="original-price">
+                                                        <del>₹<%= item.price %></del>
+                                                        <span class="discount-percent">
+                                                            (<%= Math.round(((item.price - item.discountedPrice)/item.price)*100) %>% off)
+                                                        </span>
+                                                    </span>
+                                                <% } %>
+                                            </div>
+                                        </div>
+
+                                        <div class="product-meta mt-auto">
+                                            <div class="meta-item">
+                                                <i class="fas fa-layer-group me-2"></i>
+                                                Quantity: <%= item.quantity %>
+                                            </div>
+                                            <div class="meta-item status-item">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                Status: 
+                                                <span class="status-badge <%= item.status.toLowerCase() %>">
+                                                    <%= item.status %>
+                                                    <% if(item.status === 'Cancelled') { %>
+                                                        <i class="fas fa-ban ms-1"></i>
+                                                    <% } %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="row mt-5">
+                <div class="col-md-6 offset-md-6">
+                    <div class="summary-card card border-primary">
+                        <div class="card-header bg-transparent border-primary">
+                            <h5 class="card-title mb-0">
+                                <i class="fas fa-receipt me-2"></i>
+                                Order Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="summary-item">
+                                <span>Subtotal:</span>
+                                <span>₹<%= order.totalAmount %></span>
+                            </div>
+                            <% if(order.totalSavings > 0) { %>
+                                <div class="summary-item text-success">
+                                    <span>Total Savings:</span>
+                                    <span>- ₹<%= order.totalSavings %></span>
+                                </div>
+                            <% } %>
+                            <hr class="summary-divider">
+                            <div class="summary-item total-item">
+                                <span>Grand Total:</span>
+                                <span>₹<%= order.totalAmount %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer bg-light d-flex justify-content-between">
+            <a href="/admin/orders" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>
+                Back to Orders
+            </a>
+            <% if(order.status !== 'Cancelled' && order.status !== 'Delivered') { %>
+                <button class="btn btn-primary" onclick="updateOrderStatus()" id="updateStatusBtn">
+                    <i class="fas fa-sync-alt me-2"></i>
+                    Update Order Status
+                </button>
+            <% } else { %>
+                <button class="btn btn-danger" disabled>
+                    <i class="fas fa-ban me-2"></i>
+                    Order <% if(order.status === 'Cancelled') { %>Cancelled<% } else { %>Delivered<% } %>
+                </button>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    async function updateOrderStatus() {
+        const orderId = '<%= order._id %>';
+        const currentStatus = '<%= order.status %>';
+        const btn = document.getElementById('updateStatusBtn');
+        
+        // Prevent status changes for delivered/cancelled orders
+        if (currentStatus === 'Delivered' || currentStatus === 'Cancelled') {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Action Denied',
+                text: 'Cannot modify status for delivered or cancelled orders',
+                showConfirmButton: false,
+                timer: 2000
+            });
+            return;
+        }
+
+        try {
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin me-2"></i> Updating...`;
+            btn.disabled = true;
+
+            const { value: newStatus } = await Swal.fire({
+                title: 'Update Order Status',
+                input: 'select',
+                inputOptions: {
+                    'Pending': 'Pending',
+                    'Processing': 'Processing',
+                    'Shipped': 'Shipped',
+                    'Delivered': 'Delivered',
+                    'Cancelled': 'Cancelled'
+                },
+                inputValue: currentStatus,
+                showCancelButton: true,
+                customClass: {
+                    input: 'status-select',
+                    confirmButton: 'btn-confirm',
+                    cancelButton: 'btn-cancel'
+                },
+                inputValidator: (value) => {
+                    if (!value) return 'Please select a status!';
+                    if (value === 'Cancelled') return 'Are you sure you want to cancel this entire order?';
+                }
+            });
+
+            if (newStatus) {
+                const response = await fetch(`/admin/order/${orderId}/update-status`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    await Swal.fire({
+                        title: 'Status Updated!',
+                        html: `<div class="success-message">
+                               <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                               <p>${result.message}</p>
+                             </div>`,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    location.reload();
+                } else {
+                    throw new Error(result.message);
+                }
+            }
+        } catch (error) {
+            Swal.fire({
+                title: 'Update Failed!',
+                html: `<div class="error-message">
+                        <i class="fas fa-times-circle text-danger fa-3x mb-3"></i>
+                        <p>${error.message}</p>
+                      </div>`,
+                showConfirmButton: false,
+                timer: 2000
+            });
+        } finally {
+            btn.innerHTML = `<i class="fas fa-sync-alt me-2"></i> Update Order Status`;
+            btn.disabled = false;
+        }
+    }
+</script>
+
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+
+    .order-id-badge {
+        background: rgba(255,255,255,0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .info-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+
+    .info-item {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid #eee;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .product-image-container {
+        position: relative;
+        background: #f8f9fa;
+        min-height: 200px;
+    }
+
+    .no-image-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: #f8f9fa;
+    }
+
+    .status-badge {
+        padding: 0.5em 1em;
+        border-radius: 20px;
+        font-size: 0.85em;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .badge-warning { background: #fff3cd; color: #856404; }
+    .badge-info { background: #d1ecf1; color: #0c5460; }
+    .badge-primary { background: #cfe2ff; color: #052c65; }
+    .badge-success { background: #d4edda; color: #155724; }
+    .badge-danger { background: #f8d7da; color: #721c24; }
+
+    .summary-card {
+        border: 2px solid;
+        border-radius: 12px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        font-size: 1.05rem;
+    }
+
+    .total-item {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2a2a2a;
+    }
+
+    .btn-primary {
+        background: #0069d9;
+        border-color: #0062cc;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: #005cbf;
+        transform: translateY(-2px);
+    }
+
+    .btn-danger[disabled] {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .status-select {
+        border-radius: 8px!important;
+        padding: 0.75rem!important;
+    }
+    
+</style>
+
+<%- include("../../views/partials/admin/footer1") %>

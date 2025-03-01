@@ -1,0 +1,172 @@
+<%- include("../../views/partials/admin/header1") %>
+<%- include("../../views/partials/admin/sidebar1") %>
+<%- include("../../views/partials/admin/navbar1") %>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"/>
+  <style>
+    .col-md-6 {
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      margin: 10px auto;
+    }
+
+    .form-label {
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+
+    .d-grid {
+      margin-top: 20px;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: #fff;
+      border: 1px solid #007bff;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+
+    .error-message {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <section class="content-main">
+    <div class="content-header">
+      <div>
+        <h2 class="content-title card-title">Edit Brand</h2>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <form method="POST" action="/admin/brand/update/<%= brand._id %>" onsubmit="return handleFormSubmit(event)">
+                
+              <div class="mb-4">
+                <label for="brand_name" class="form-label">Name</label>
+                <input
+                  type="text"
+                  name="brandName"
+                  placeholder="Type here"
+                  class="form-control"
+                  id="brand_name"
+                  value="<%= brand.brandName %>"
+                  required
+                />
+                <div id="name-error" class="error-message"></div>
+              </div>
+              <div class="mb-4">
+                <label class="form-label">Description</label>
+                <textarea
+                  placeholder="Type here"
+                  name="description"
+                  class="form-control"
+                  id="descriptionId"
+                  required
+                ><%= brand.description %></textarea>
+                <div id="description-error" class="error-message"></div>
+              </div>
+              <div class="d-grid">
+                <button class="btn btn-primary" type="submit">Update Brand</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.js"></script>
+  <script>
+    function handleFormSubmit(event) {
+      event.preventDefault();
+
+      if (!validateForm()) {
+        return;
+      }
+
+      const brandName = document.getElementById("brand_name").value.trim();
+      const description = document.getElementById("descriptionId").value.trim();
+
+      fetch(`/admin/brand/update/<%= brand._id %>`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ brandName, description }),
+      })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          Swal.fire("Success", "Brand updated successfully!", "success");
+          window.location.href = "/admin/brand";
+        } else {
+          Swal.fire("Error", data.error || "An error occurred", "error");
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        Swal.fire("Error", "An unexpected error occurred. Please try again later.", "error");
+      });
+    }
+
+    function validateForm() {
+      clearErrorMessages();
+      const brandName = document.getElementById("brand_name").value.trim();
+      const description = document.getElementById("descriptionId").value.trim();
+      let isValid = true;
+
+      // Check if brand name is empty or invalid
+      if (brandName === "") {
+        displayErrorMessage("name-error", "Please enter a brand name");
+        isValid = false;
+      } else if (!/^[A-Z][a-z]+$/.test(brandName)) {
+        displayErrorMessage(
+          "name-error",
+          "Brand name must start with a capital letter and contain only lowercase letters (no numbers or symbols)"
+        );
+        isValid = false;
+      }
+
+      // Check if description is empty
+      if (description === "") {
+        displayErrorMessage("description-error", "Please enter a description");
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function displayErrorMessage(elementId, message) {
+      const errorElement = document.getElementById(elementId);
+      errorElement.innerText = message;
+      errorElement.style.display = "block";
+    }
+
+    function clearErrorMessages() {
+      const errorElements = document.getElementsByClassName("error-message");
+      Array.from(errorElements).forEach((element) => {
+        element.innerText = "";
+        element.style.display = "none";
+      });
+    }
+  </script>
+  
+  <%- include("../../views/partials/admin/footer1") %>

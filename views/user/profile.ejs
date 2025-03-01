@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+      /* General Styles */
+      body {
+        background-color: #f7f7f7;
+        color: #333;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      /* Navbar Styles */
+      .navbar {
+        background: #2874f0;
+        padding: 1rem 2rem;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .nav-link {
+        font-weight: bold;
+        position: relative;
+      }
+
+      .nav-link::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -2px;
+        width: 0;
+        height: 2px;
+        background-color: black;
+        transition: width 0.3s ease-in-out;
+      }
+
+      .nav-link:hover::after {
+        width: 100%;
+      }
+
+      /* Main Content Styles */
+      .container {
+        max-width: 1300px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+      }
+
+      /* Sidebar Styles */
+      .sidebar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .menu-list {
+        list-style: none;
+      }
+
+      .menu-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: #555;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+
+      .menu-link.active {
+        background: #2874f0;
+        color: white;
+      }
+
+      .menu-link:hover:not(.active) {
+        background: #f8f9fa;
+        color: #2874f0;
+      }
+
+      /* Profile Content Styles */
+      .profile-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #555;
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.3s ease;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #2874f0;
+      }
+
+      .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: none;
+      }
+
+      .btn-save {
+        background: #2874f0;
+        color: white;
+      }
+
+      .btn-save:hover {
+        background: #1e5bbf;
+      }
+
+      .btn-add {
+        background: #2874f0;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-add:hover {
+        background: #1e5bbf;
+      }
+
+      /* Address Section Styles */
+      .address-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f0f0f0;
+      }
+
+      .address-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .address-list {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .address-card {
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #f8f9fa;
+      }
+
+      .address-type {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #2874f0;
+      }
+
+      .address-details {
+        color: #666;
+        line-height: 1.5;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+
+      .modal-content {
+        position: relative;
+        background-color: #fff;
+        margin: 30px auto;
+        padding: 0;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .modal-header {
+        padding: 12px 20px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .modal-header h3 {
+        margin: 0;
+        color: #333;
+        font-size: 1.1rem;
+      }
+
+      .modal-body {
+        padding: 15px 20px;
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+      }
+
+      .btn-primary {
+        background-color: #2874f0;
+        color: white;
+      }
+
+      .btn-secondary {
+        background-color: #6c757d;
+        color: white;
+      }
+
+      .no-address-message {
+        text-align: center;
+        color: #666;
+        padding: 40px;
+      }
+
+      /* Address Card Actions */
+      .address-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .edit-btn {
+        background-color: #2874f0;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        display: inline-block;
+        transition: background 0.3s ease, transform 0.2s;
+      }
+
+      .edit-btn:hover {
+        background-color: #1e5bbf;
+        transform: scale(1.05);
+      }
+
+      .delete-btn {
+        background-color: #ff6161;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        display: inline-block;
+        transition: background 0.3s ease, transform 0.2s;
+      }
+
+      .delete-btn:hover {
+        background-color: #e60000;
+        transform: scale(1.05);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="/">TIME ZONE.</a>
+        <div class="mx-auto">
+          <ul class="navbar-nav d-flex flex-row gap-4">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/shopPage">Shop</a>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <a href="#" class="nav-link">
+            <i class="fas fa-user fs-4"></i>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <ul class="menu-list">
+          <li class="menu-item">
+            <a href="/userProfile" class="menu-link active">Profile Details</a>
+          </li>
+          <li class="menu-item">
+            <a href="/cart" class="menu-link">My Cart</a>
+          </li>
+          <li class="menu-item">
+            <a href="/orders" class="menu-link">My Orders</a>
+          </li>
+          <li class="menu-item">
+            <a href="/wishlist" class="menu-link">My Wishlist</a>
+          </li>
+          <li class="menu-item">
+            <a href="/wallet" class="menu-link">My Wallet</a>
+          </li>
+          <li class="menu-item">
+            <a href="/coupon" class="menu-link">Coupons</a>
+          </li>
+          <li class="menu-item">
+            <a href="/helpcenter" class="menu-link">Help Center</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Profile Content -->
+      <main class="profile-content">
+        <h2 class="section-title">Profile Details</h2>
+        <form action="/updateProfile" method="POST">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              class="form-control"
+              value="<%= user?.name %>"
+              required
+              pattern="^[A-Za-z]+(?: [A-Za-z]+)*$"
+            />
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-control"
+              value="<%= user?.email %>"
+              readonly
+            />
+          </div>
+          <button type="submit" class="btn btn-save">Save Changes</button>
+        </form>
+
+        <!-- Address Section -->
+        <section class="address-section">
+          <div class="address-header">
+            <h2 class="section-title" style="margin-bottom: 0; padding-bottom: 0; border-bottom: none">
+              My Addresses
+            </h2>
+            <button class="btn btn-add">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add New Address
+            </button>
+          </div>
+
+          <% if (user?.address && user.address.length > 0) { %>
+          <div class="address-list">
+            <% user.address.forEach(function(address, index) { %>
+            <div class="address-card">
+              <div class="address-type"><%= address.addressType %></div>
+              <div class="address-details">
+                <%= address.street %><br />
+                <%= address.city %>, <%= address.state %> <%= address.pincode %><br />
+                <%= address.country %><br />
+                Phone: <%= address.phone %>
+              </div>
+              <div class="address-actions">
+                <a href="/edit-address/<%=address._id%>" class="edit-btn">Edit</a>
+                <a href="javascript:void(0);" class="delete-btn" onclick="confirmDelete('<%= address._id %>')">Delete</a>
+              </div>
+            </div>
+            <% }); %>
+          </div>
+          <% } else { %>
+          <div class="no-address-message">
+            <p>No address added yet. Please add a new address.</p>
+          </div>
+          <% } %>
+        </section>
+
+        <!-- Modal -->
+        <div class="modal" id="addressModal">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>Add New Address</h3>
+              <button class="close-btn">&times;</button>
+            </div>
+            <form id="addressForm" class="modal-body">
+              <div class="form-group">
+                <label for="street">Street Address*</label>
+                <input type="text" id="street" name="street" />
+                <small class="error-message"></small>
+              </div>
+              <div class="form-group">
+                <label for="city">City*</label>
+                <input type="text" id="city" name="city" />
+                <small class="error-message"></small>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="state">State*</label>
+                  <input type="text" id="state" name="state" />
+                  <small class="error-message"></small>
+                </div>
+                <div class="form-group">
+                  <label for="pincode">Pincode*</label>
+                  <input type="text" id="pincode" name="pincode" />
+                  <small class="error-message"></small>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="country">Country*</label>
+                <input type="text" id="country" name="country" />
+                <small class="error-message"></small>
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone Number*</label>
+                <input type="tel" id="phone" name="phone" />
+                <small class="error-message"></small>
+              </div>
+              <div class="form-group">
+                <label for="addressType">Address Type*</label>
+                <select id="addressType" name="addressType">
+                  <option value="">Select Type</option>
+                  <option value="Home">Home</option>
+                  <option value="Work">Work</option>
+                  <option value="Other">Other</option>
+                </select>
+                <small class="error-message"></small>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Address</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+      function confirmDelete(addressId) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = `/delete-address?addressId=${addressId}&path=profile`;
+          }
+        });
+      }
+
+      // Modal functionality
+      const modal = document.getElementById("addressModal");
+      const addButton = document.querySelector(".btn-add");
+      const closeButton = document.querySelector(".close-btn");
+      const cancelButton = document.getElementById("cancelBtn");
+      const addressForm = document.getElementById("addressForm");
+
+      // Open modal
+      addButton.addEventListener("click", () => {
+        modal.style.display = "block";
+      });
+
+      // Close modal functions
+      function closeModal() {
+        modal.style.display = "none";
+        addressForm.reset();
+      }
+
+      closeButton.addEventListener("click", closeModal);
+      cancelButton.addEventListener("click", closeModal);
+
+      // Close modal when clicking outside
+      window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+
+      // Form validation and submission
+      document.getElementById("addressForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        clearErrors();
+
+        const street = document.getElementById("street").value.trim();
+        const city = document.getElementById("city").value.trim();
+        const state = document.getElementById("state").value.trim();
+        const pincode = document.getElementById("pincode").value.trim();
+        const country = document.getElementById("country").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const addressType = document.getElementById("addressType").value.trim();
+
+        const textPattern = /^[A-Za-z\s]{3,}$/;
+        const phonePattern = /^[6-9]\d{9}$/;
+        const pincodePattern = /^\d{6}$/;
+
+        let isValid = true;
+
+        if (!textPattern.test(street)) {
+          showError("street", "Street must contain only letters and be at least 3 characters long.");
+          isValid = false;
+        }
+        if (!textPattern.test(city)) {
+          showError("city", "City must contain only letters and be at least 3 characters long.");
+          isValid = false;
+        }
+        if (!textPattern.test(state)) {
+          showError("state", "State must contain only letters and be at least 3 characters long.");
+          isValid = false;
+        }
+        if (!pincodePattern.test(pincode)) {
+          showError("pincode", "Pincode must be exactly 6 digits.");
+          isValid = false;
+        }
+        if (!textPattern.test(country)) {
+          showError("country", "Country must contain only letters and be at least 3 characters long.");
+          isValid = false;
+        }
+        if (!phonePattern.test(phone)) {
+          showError("phone", "Phone number must be exactly 10 digits and start with 6 or greater.");
+          isValid = false;
+        }
+        if (!addressType) {
+          showError("addressType", "Please select an address type.");
+          isValid = false;
+        }
+
+        if (!isValid) return;
+
+        const formData = { street, city, state, pincode, country, phone, addressType };
+
+        try {
+          const response = await fetch("/newAddress", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          });
+
+          if (response.ok) {
+            Swal.fire({
+              icon: "success",
+              title: "Address Saved!",
+              text: "Your address has been saved successfully.",
+              timer: 2000,
+              showConfirmButton: false,
+            });
+
+            setTimeout(() => {
+              window.location.reload();
+            }, 2000);
+          } else {
+            throw new Error("Failed to add address");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      });
+
+      function showError(id, message) {
+        const inputField = document.getElementById(id);
+        const errorMessage = inputField.nextElementSibling;
+        errorMessage.textContent = message;
+        errorMessage.style.color = "red";
+      }
+
+      function clearErrors() {
+        document.querySelectorAll(".error-message").forEach((el) => {
+          el.textContent = "";
+        });
+      }
+    </script>
+  </body>
+</html>

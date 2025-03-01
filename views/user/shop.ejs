@@ -1,0 +1,861 @@
+<%- include("../../views/partials/user/header") %>
+
+<style>
+    /* Global Styles */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f9f9f9;
+    }
+
+    .breadcrumb__text h4 {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .breadcrumb__links a {
+        color: #666;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .breadcrumb__links a:hover {
+        color: #007bff;
+    }
+
+    .breadcrumb__links span {
+        color: #999;
+    }
+
+    /* Sidebar Styles */
+    .shop__sidebar {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Search Bar Styles (Flipkart-Inspired) */
+    .shop__sidebar__search {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .shop__sidebar__search form {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .shop__sidebar__search input {
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 25px;
+        font-size: 14px;
+        color: #333;
+        background: #f5f6f5;
+        outline: none;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .shop__sidebar__search input::placeholder {
+        color: #999;
+        font-style: italic;
+    }
+
+    .shop__sidebar__search input:focus {
+        border-color: #2874f0;
+        box-shadow: 0 0 5px rgba(40, 116, 240, 0.3);
+    }
+
+    .shop__sidebar__search button {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #2874f0;
+        font-size: 16px;
+        transition: color 0.3s ease;
+    }
+
+    .shop__sidebar__search button:hover {
+        color: #0056b3;
+    }
+
+    /* Accordion Styles for Sidebar */
+    .sidebar__section {
+        margin-bottom: 15px;
+    }
+
+    .sidebar__section h5 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        padding: 10px 0;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+    }
+
+    .sidebar__section h5:hover {
+        color: #007bff;
+    }
+
+    .sidebar__section h5::after {
+        content: '\f078';
+        font-family: 'FontAwesome';
+        font-size: 12px;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar__section.active h5::after {
+        transform: rotate(180deg);
+    }
+
+    .sidebar__content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+    }
+
+    .sidebar__content ul {
+        list-style: none;
+        padding: 10px 0;
+    }
+
+    .sidebar__content ul li {
+        margin-bottom: 8px;
+    }
+
+    .sidebar__content ul li a {
+        color: #666;
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s ease;
+    }
+
+    .sidebar__content ul li a:hover {
+        color: #007bff;
+    }
+
+    .selected-filter a {
+        color: #007bff !important;
+        font-weight: 600;
+    }
+
+    .active-filters {
+        margin-bottom: 20px;
+    }
+
+    .filter-pill {
+        display: inline-block;
+        padding: 5px 15px;
+        margin: 5px;
+        background: #e9ecef;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .filter-pill:hover {
+        background: #dee2e6;
+    }
+
+    .filter-pill a {
+        color: #666;
+        text-decoration: none;
+    }
+
+    .filter-pill a:hover {
+        color: #333;
+    }
+
+    /* Product Card Styles */
+    .product__item {
+        background: #fff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product__item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .product__item__pic {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .product__item__pic img {
+        width: 100%;
+        height: auto;
+        transition: transform 0.3s ease;
+    }
+
+    .product__item__pic:hover img {
+        transform: scale(1.1);
+    }
+
+    .product__item__text {
+        padding: 15px;
+    }
+
+    .product__item__text h6 {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .product__item__text .add-cart {
+        display: inline-block;
+        padding: 8px 15px;
+        background: #007bff;
+        color: #fff;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+
+    .product__item__text .add-cart:hover {
+        background: #0056b3;
+    }
+
+    .product__item__text .rating {
+        color: #ffc107;
+        margin-bottom: 10px;
+    }
+
+    .product__item__text .fw-bold {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .product__item__text .old-price {
+        text-decoration: line-through;
+        color: #999;
+        margin-left: 10px;
+    }
+
+    .product__item__text .discount-percentage {
+        color: #28a745;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
+    /* Wishlist Icon */
+    .wishlist-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+    }
+
+    .wishlist-icon .fa-heart {
+        color: #ccc;
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .wishlist-icon .fa-heart.active {
+        color: #ff4757;
+    }
+
+    /* Pagination Styles */
+    .product__pagination {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .product__pagination a {
+        display: inline-block;
+        padding: 8px 16px;
+        margin: 0 5px;
+        background: #007bff;
+        color: #fff;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background 0.3s ease;
+    }
+
+    .product__pagination a.active {
+        background: #0056b3;
+    }
+
+    .product__pagination a:hover {
+        background: #0056b3;
+    }
+</style>
+<style>
+    /* Breadcrumb Section Styles */
+    .breadcrumb-option {
+        padding: 0.75cm 0;
+    }
+
+    .breadcrumb__text {
+        padding: 0;
+    }
+
+    .breadcrumb__text h4 {
+        margin: 0;
+    }
+
+    .breadcrumb__links {
+        margin: 0;
+    }
+</style>
+
+<section class="breadcrumb-option">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="breadcrumb__text">
+                    <h4>Shop</h4>
+                    <div class="breadcrumb__links">
+                        <a href="/">Home</a>
+                        <span>Shop</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Shop Section Begin -->
+<section class="shop spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="shop__sidebar">
+                    <!-- Search Bar -->
+                    <div class="shop__sidebar__search">
+                        <form action="/shopPage" method="GET">
+                            <% Object.entries(filterParams).forEach(([key, values]) => { %>
+                                <% if (key !== 'search' && values) { %>
+                                    <% if (Array.isArray(values)) { %>
+                                        <% values.forEach(value => { %>
+                                            <input type="hidden" name="<%= key %>" value="<%= value %>">
+                                        <% }) %>
+                                    <% } else { %>
+                                        <input type="hidden" name="<%= key %>" value="<%= values %>">
+                                    <% } %>
+                                <% } %>
+                            <% }) %>
+                            <input type="text" name="search" placeholder="Search for products..." value="<%= searchQuery %>">
+                            <button type="submit"><i class="fa fa-search"></i></button>
+                        </form>
+                    </div>
+
+                    <!-- Active Filters -->
+                    <div class="active-filters">
+                        <% if (Object.keys(filterParams).length > 0) { %>
+                            <strong>Selected Filters:</strong>
+                            <% Object.entries(filterParams).forEach(([key, value]) => { %>
+                                <% if (Array.isArray(value)) { %>
+                                    <% value.forEach(val => { %>
+                                        <% let displayName = val; %>
+                                        <% if (key === 'category') { 
+                                            const category = categories.find(c => c._id.toString() === val);
+                                            displayName = category ? category.name : val;
+                                        } else if (key === 'brand') { 
+                                            const brand = brands.find(b => b._id.toString() === val);
+                                            displayName = brand ? brand.brandName : val;
+                                        } %>
+                                        <div class="filter-pill">
+                                            <%= displayName %>
+                                            <a href="/shopPage?<% const newParams = new URLSearchParams(filterParams); 
+                                                const updatedValues = newParams.getAll(key).filter(v => v !== val);
+                                                newParams.delete(key);
+                                                updatedValues.forEach(v => newParams.append(key, v));
+                                                if (updatedValues.length === 0) newParams.delete(key);
+                                                newParams.delete('page');
+                                                %><%= newParams.toString() %>">
+                                                ×
+                                            </a>
+                                        </div>
+                                    <% }) %>
+                                <% } else if (key !== 'search') { %>
+                                    <% let displayName = value; %>
+                                    <% if (key === 'priceRange') {
+                                        displayName = value.replace('under1000', 'Under ₹1000')
+                                                        .replace('1000-1500', '₹1000 - ₹1500')
+                                                        .replace('above1500', 'Above ₹1500');
+                                    } else if (key === 'sort') {
+                                        displayName = {
+                                            popularity: 'Popularity',
+                                            priceLowToHigh: 'Price: Low to High',
+                                            priceHighToLow: 'Price: High to Low',
+                                            avgRatings: 'Average Rating',
+                                            featured: 'Featured'
+                                        }[value];
+                                    } %>
+                                    <div class="filter-pill">
+                                        <%= key === 'sort' ? 'Sort: ' + displayName : displayName %>
+                                        <a href="/shopPage?<% const newParams = new URLSearchParams(filterParams); 
+                                            newParams.delete(key);
+                                            newParams.delete('page');
+                                            %><%= newParams.toString() %>">
+                                            ×
+                                        </a>
+                                    </div>
+                                <% } %>
+                            <% }) %>
+                            <div class="filter-pill">
+                                <a href="/shopPage">Clear All</a>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <!-- Categories Section -->
+                    <div class="sidebar__section">
+                        <h5>Categories</h5>
+                        <div class="sidebar__content">
+                            <ul>
+                                <% categories.forEach((category) => { %>
+                                    <li class="<%= filterParams.category && filterParams.category.includes(category._id.toString()) ? 'selected-filter' : '' %>">
+                                        <a href="/shopPage?<% const newParams = new URLSearchParams(filterParams); 
+                                            const currentCats = newParams.getAll('category');
+                                            newParams.delete('category');
+                                            currentCats.includes(category._id.toString()) ? 
+                                                currentCats.filter(id => id !== category._id.toString()).forEach(id => newParams.append('category', id)) :
+                                                [...currentCats, category._id.toString()].forEach(id => newParams.append('category', id));
+                                            newParams.delete('page');
+                                            %><%= newParams.toString() %>">
+                                            <%= category.name %> (<%= category.productCount || 0 %>)
+                                        </a>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Brands Section -->
+                    <div class="sidebar__section">
+                        <h5>Brands</h5>
+                        <div class="sidebar__content">
+                            <ul>
+                                <% brands.forEach((brand) => { %>
+                                    <li class="<%= filterParams.brand && filterParams.brand.includes(brand._id.toString()) ? 'selected-filter' : '' %>">
+                                        <a href="/shopPage?<% const newParams = new URLSearchParams(filterParams); 
+                                            const currentBrands = newParams.getAll('brand');
+                                            newParams.delete('brand');
+                                            currentBrands.includes(brand._id.toString()) ? 
+                                                currentBrands.filter(id => id !== brand._id.toString()).forEach(id => newParams.append('brand', id)) :
+                                                [...currentBrands, brand._id.toString()].forEach(id => newParams.append('brand', id));
+                                            newParams.delete('page');
+                                            %><%= newParams.toString() %>">
+                                            <%= brand.brandName %> (<%= brand.productCount || 0 %>)
+                                        </a>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Price Section -->
+                    <div class="sidebar__section">
+                        <h5>Price</h5>
+                        <div class="sidebar__content">
+                            <ul>
+                                <% ['under1000', '1000-1500', 'above1500'].forEach(range => { %>
+                                    <li class="<%= filterParams.priceRange === range ? 'selected-filter' : '' %>">
+                                        <a href="/shopPage?<% const newParams = new URLSearchParams(filterParams); 
+                                            newParams.set('priceRange', range);
+                                            if (filterParams.priceRange === range) newParams.delete('priceRange');
+                                            newParams.delete('page');
+                                            %><%= newParams.toString() %>">
+                                            <%= range.replace('under1000', 'Under ₹1000')
+                                                    .replace('1000-1500', '₹1000 - ₹1500')
+                                                    .replace('above1500', 'Above ₹1500') %> 
+                                            (<%= priceCounts[range] || 0 %>)
+                                        </a>
+                                    </li>
+                                <% }) %>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Section -->
+            <div class="col-lg-9">
+                <div class="shop__product__option">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="shop__product__option__left">
+                                <p>Showing <%= products.length %> of <%= totalProducts %> results</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-6">
+                            <div class="shop__product__option__right">
+                                <form action="/shopPage" method="GET">
+                                    <% Object.entries(filterParams).forEach(([key, values]) => { %>
+                                        <% if (key !== 'sort' && values) { %>
+                                            <% if (Array.isArray(values)) { %>
+                                                <% values.forEach(value => { %>
+                                                    <input type="hidden" name="<%= key %>" value="<%= value %>">
+                                                <% }) %>
+                                            <% } else { %>
+                                                <input type="hidden" name="<%= key %>" value="<%= values %>">
+                                            <% } %>
+                                        <% } %>
+                                    <% }) %>
+                                    <select name="sort" onchange="this.form.submit()">
+                                        <option value="">Sort By</option>
+                                        <option value="popularity" <%= filterParams.sort === 'popularity' ? 'selected' : '' %>>Popularity</option>
+                                        <option value="priceLowToHigh" <%= filterParams.sort === 'priceLowToHigh' ? 'selected' : '' %>>Price: Low to High</option>
+                                        <option value="priceHighToLow" <%= filterParams.sort === 'priceHighToLow' ? 'selected' : '' %>>Price: High to Low</option>
+                                        <option value="newestFirst" <%= filterParams.sort === 'newestFirst' ? 'selected' : '' %>>Newest First</option>
+                                        <option value="avgRatings" <%= filterParams.sort === 'avgRatings' ? 'selected' : '' %>>Customer Rating</option>
+                                        <option value="aToZ" <%= filterParams.sort === 'aToZ' ? 'selected' : '' %>>A to Z</option>
+                                        <option value="zToA" <%= filterParams.sort === 'zToA' ? 'selected' : '' %>>Z to A</option>
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <% products.forEach(product => { %>
+                        <div class="col-lg-4 col-md-6 col-sm-6">
+                            <div class="product__item">
+                                <div class="product__item__pic set-bg <%= product.stockQuantity === 0 ? 'blurred' : '' %>" data-setbg="<%= product.image[0] %>">
+                                    <% if (product.stockQuantity === 0) { %>
+                                    <% } %>
+                                    <ul class="product__hovr">
+                                        <li><a href="/productDetails/<%= product._id %>"><img src="<%= product.image[0] %>" alt=""></a></li>
+                                    </ul>
+                                    <button 
+                                        class="wishlist-btn <%= product.wishlisted ? 'wishlist-active' : '' %>" 
+                                        data-product-id="<%= product._id %>"
+                                        onclick="toggleWishlist('<%= product._id %>')"
+                                    >
+                                        <i class="fa fa-heart"></i>
+                                    </button>
+                                </div>
+                                <div class="product__item__text">
+                                    <h6><%= product.productName %></h6>
+                                    <% if (product.stockQuantity === 0) { %>
+                                        <a href="#" class="out-of-stock-button" disabled>Out of Stock</a>
+                                    <% } else { %>
+                                        <a href="#" class="add-cart" data-product-id="<%= product._id %>">+ Add To Cart</a>
+                                    <% } %>
+                                    <div class="rating">
+                                        <% const rating = Math.round(product.averageRating || 0); %>
+                                        <% for (let i = 0; i < 5; i++) { %>
+                                            <i class="fa <%= i < rating ? 'fa-star' : 'fa-star-o' %>"></i>
+                                        <% } %>
+                                    </div>
+                                    <div class="fw-bold">
+                                        <% 
+                                            const discountPrice = Number(product.discountprice) || 0;
+                                            const categoryDiscountPrice = Number(product.categoryDiscountprice) || 0;
+                                            const originalPrice = Number(product.price) || 0;
+                                        %>
+                                        <% if (discountPrice > 0 && (categoryDiscountPrice === 0 || discountPrice < categoryDiscountPrice)) { %>
+                                            <span class="text-primary">₹<%= discountPrice %></span>
+                                            <span class="old-price">₹<%= originalPrice %></span>
+                                            <span class="discount-percentage">
+                                                <%= Math.round((originalPrice - discountPrice) / originalPrice * 100) %>% off
+                                            </span>
+                                        <% } else if (categoryDiscountPrice > 0 && (discountPrice === 0 || categoryDiscountPrice < discountPrice)) { %>
+                                            <span class="text-primary">₹<%= categoryDiscountPrice %></span>
+                                            <span class="old-price">₹<%= originalPrice %></span>
+                                            <span class="discount-percentage">
+                                                <%= Math.round((originalPrice - categoryDiscountPrice) / originalPrice * 100) %>% off
+                                            </span>
+                                        <% } else { %>
+                                            <span class="text-primary">₹<%= originalPrice %></span>
+                                        <% } %>
+                                    </div>
+                                    <% if (product.stockQuantity === 0) { %>
+                                        <p class="out-of-stock" style="color: red;">Out of Stock</p>
+                                    <% } else if (product.stockQuantity <= 5) { %>
+                                        <p class="few-left" style="color: orange;">Only <%= product.stockQuantity %> left!</p>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+
+                <!-- Pagination -->
+                <div class="product__pagination">
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <a href="/shopPage?<% const newParams = new URLSearchParams(filterParams); 
+                                    newParams.set('page', i);
+                                    %><%= newParams.toString() %>" 
+                           class="<%= currentPage === i ? 'active' : '' %>">
+                            <%= i %>
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include("../../views/partials/user/footer") %>
+<!-- Shop Section End -->
+
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Styles -->
+<style>
+    .wishlist-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 22px;
+        color: rgba(255, 255, 255, 0.7);
+        text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
+        z-index: 10;
+    }
+
+    .wishlist-btn.wishlist-active {
+        color: #ff4757;
+        transform: scale(1.1);
+    }
+
+    .wishlist-btn:hover {
+        color: #ff4757;
+        transform: scale(1.1);
+    }
+
+    /* Unified Alert Styling */
+    .top-center-alert {
+        border-radius: 8px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+        padding: 0.8em !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(5px) !important;
+        border: 1px solid rgba(220, 220, 220, 0.5) !important;
+    }
+
+    .top-center-alert .swal2-icon {
+        margin: 0.3em 0.3em 0.3em 0 !important;
+        transform: scale(0.8) !important;
+    }
+
+    .top-center-alert .swal2-title {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1em !important;
+        font-weight: 500 !important;
+        color: #333 !important;
+    }
+
+    @keyframes heartBeat {
+        0% { transform: scale(1); }
+        25% { transform: scale(1.2); }
+        50% { transform: scale(1); }
+        75% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    .heart-beat {
+        animation: heartBeat 0.8s;
+    }
+</style>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // Accordion Functionality for Sidebar
+    const sections = document.querySelectorAll('.sidebar__section');
+    sections.forEach(section => {
+        const header = section.querySelector('h5');
+        const content = section.querySelector('.sidebar__content');
+
+        if (section.classList.contains('active')) {
+            content.style.maxHeight = content.scrollHeight + 'px';
+        }
+
+        header.addEventListener('click', () => {
+            const isActive = section.classList.contains('active');
+            sections.forEach(s => {
+                s.classList.remove('active');
+                s.querySelector('.sidebar__content').style.maxHeight = null;
+            });
+
+            if (!isActive) {
+                section.classList.add('active');
+                content.style.maxHeight = content.scrollHeight + 'px';
+            }
+        });
+    });
+
+    // Add to Cart Functionality
+    const addToCartButtons = document.querySelectorAll(".add-cart");
+    addToCartButtons.forEach(button => {
+        button.addEventListener("click", async (e) => {
+            e.preventDefault();
+            button.disabled = true;
+            const productId = button.getAttribute("data-product-id");
+
+            try {
+                const response = await fetch("/add-to-cart", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ productId })
+                });
+                const data = await response.json();
+                button.disabled = false;
+
+                if (data.success) {
+                    showTopCenterAlert("success", "Product Added to Cart");
+                    updateCartCount(data.cartCount);
+                } else if (data.message === "Sorry, we don't have any more units for this item.") {
+                    showTopCenterAlert("error", "Out of Stock");
+                } else {
+                    showTopCenterAlert("error", data.message || "Failed to add product!");
+                }
+            } catch (error) {
+                button.disabled = false;
+                console.error("Error adding to cart:", error);
+                showTopCenterAlert("error", "An error occurred. Please try again.");
+            }
+        });
+    });
+
+    // Wishlist Functionality
+    const productItems = document.querySelectorAll('.product__item');
+    productItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            const wishlistBtn = this.querySelector('.wishlist-btn');
+            if (wishlistBtn) {
+                wishlistBtn.style.opacity = '1';
+            }
+        });
+        
+        item.addEventListener('mouseleave', function() {
+            const wishlistBtn = this.querySelector('.wishlist-btn');
+            if (wishlistBtn && !wishlistBtn.classList.contains('wishlist-active')) {
+                wishlistBtn.style.opacity = '0.7';
+            }
+        });
+    });
+});
+
+async function toggleWishlist(productId) {
+    const wishlistButton = document.querySelector(`.wishlist-btn[data-product-id="${productId}"]`);
+    
+    wishlistButton.classList.add('heart-beat');
+    setTimeout(() => {
+        wishlistButton.classList.remove('heart-beat');
+    }, 800);
+
+    try {
+        const response = await fetch('/wishlist/toggle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId }),
+        });
+
+        const result = await response.json();
+
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return;
+        }
+
+        if (result.success) {
+            const isAdding = !wishlistButton.classList.contains('wishlist-active');
+            
+            if (isAdding) {
+                wishlistButton.classList.add('wishlist-active');
+                showTopCenterAlert('success', 'Added to Wishlist');
+                updateWishlistCount(result.wishlistCount);
+            } else {
+                wishlistButton.classList.remove('wishlist-active');
+                showTopCenterAlert('info', 'Removed from Wishlist');
+                updateWishlistCount(result.wishlistCount);
+            }
+        } else {
+            showTopCenterAlert('error', result.message || 'Something went wrong!');
+        }
+    } catch (error) {
+        console.error('Error toggling wishlist:', error);
+        showTopCenterAlert('error', 'Please Login First');
+    }
+}
+
+// Unified Top-Center Alert Function
+function showTopCenterAlert(icon, title) {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top", // Top center position
+        width: "300px",
+        showConfirmButton: false,
+        timer: 1200,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+        customClass: { popup: "top-center-alert" }
+    });
+
+    let iconColor;
+    switch (icon) {
+        case "success": iconColor = "#28a745"; break; // Green for success
+        case "error": iconColor = "#dc3545"; break;   // Red for error
+        case "info": iconColor = "#17a2b8"; break;    // Teal for info
+        default: iconColor = "#007bff";               // Blue as default
+    }
+
+    Toast.fire({ icon: icon, title: title, iconColor: iconColor });
+}
+
+function updateCartCount(count) {
+    const cartCountElement = document.querySelector('.nav-icon-wrapper[href="/cart"] .item-count');
+    if (cartCountElement) {
+        cartCountElement.textContent = count;
+        cartCountElement.style.display = count > 0 ? 'flex' : 'none';
+    } else if (count > 0) {
+        const cartIconContainer = document.querySelector('.nav-icon-wrapper[href="/cart"] .icon-container');
+        if (cartIconContainer) {
+            const newCountElement = document.createElement('span');
+            newCountElement.className = 'item-count';
+            newCountElement.textContent = count;
+            cartIconContainer.appendChild(newCountElement);
+        }
+    }
+}
+
+function updateWishlistCount(count) {
+    const wishlistCountElement = document.querySelector('.nav-icon-wrapper[href="/wishlist"] .item-count');
+    if (wishlistCountElement) {
+        wishlistCountElement.textContent = count;
+        wishlistCountElement.style.display = count > 0 ? 'flex' : 'none';
+    } else if (count > 0) {
+        const wishlistIconContainer = document.querySelector('.nav-icon-wrapper[href="/wishlist"] .icon-container');
+        if (wishlistIconContainer) {
+            const newCountElement = document.createElement('span');
+            newCountElement.className = 'item-count';
+            newCountElement.textContent = count;
+            wishlistIconContainer.appendChild(newCountElement);
+        }
+    }
+}
+</script>

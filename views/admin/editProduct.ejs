@@ -1,0 +1,544 @@
+<%- include("../../views/partials/admin/header1") %>
+<%- include("../../views/partials/admin/sidebar1") %>
+<%- include("../../views/partials/admin/navbar1") %>
+<!-- CSS Styles -->
+<style>
+  #cropModal {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  z-index: 9999;
+  width: 80%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.crop-container {
+  width: 100%;
+  max-height: 500px;
+  overflow: hidden;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+#cropImage {
+  max-width: 100%;
+  max-height: 500px;
+}
+
+
+  .edit-product-form {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  label {
+    font-size: 16px;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select,
+  input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #218838;
+  }
+
+  #imagePreview {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #imagePreview img {
+    width: 100px;
+    height: 100px;
+    border-radius: 5px;
+    margin: 5px;
+  }
+
+  .existing-image {
+    border: 2px solid #ccc;
+  }
+
+  .remove-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 20px;
+    color: red;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    padding: 5px;
+  }
+
+  .remove-icon:hover {
+    background: rgba(255, 255, 255, 1);
+  }
+</style>
+<style>
+  #imagePreview {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+#imagePreview img {
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  margin: 5px;
+  border: 2px solid #ccc;
+}
+
+</style>
+
+
+
+<style>
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 8px;
+  }
+  
+  .crop-container {
+    max-height: 70vh;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .image-preview-container {
+  display: flex;
+  flex-wrap: nowrap; 
+  overflow-x: auto; 
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ddd; 
+  border-radius: 5px;
+  background-color: #f9f9f9; 
+}
+
+.image-container {
+  position: relative;
+  display: inline-block;
+}
+
+.preview-image {
+  max-width: 100px; /* Adjust width as needed */
+  max-height: 100px; /* Adjust height as needed */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.remove-image {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: rgba(255, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+  .btn-primary {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn-secondary {
+    background-color: #666;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  </style>
+
+
+<h1 class="page-title">Edit Product</h1>
+<h3><%=error%></h3>
+<form action="/admin/editProduct/<%= product._id %>" method="POST" enctype="multipart/form-data" class="edit-product-form">  <!-- Product Name -->
+  <div class="form-group">
+    <label for="name">Product Name:</label>
+    <input type="text" id="name" name="name" value="<%= product.productName %>" required>
+    <input type="text" name="_id" value="<%=product._id%>" hidden>
+  </div>
+
+  <!-- Description -->
+  <div class="form-group">
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required><%= product.description %></textarea>
+  </div>
+
+  <!-- Category -->
+  <div class="form-group">
+    <label for="category">Category:</label>
+    <select id="category" name="category" required>
+      <% categories.forEach(category => { %>
+        <option value="<%= category._id %>" <%= product.category.toString() === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
+      <% }); %>
+    </select>
+  </div>
+
+  <!-- Brand -->
+  <div class="form-group">
+    <label for="brand">Brand:</label>
+    <select id="brand" name="brand" required>
+      <% brand.forEach(brand => { %>
+        <option value="<%= brand._id %>" <%= product.brand.toString() === brand._id.toString() ? 'selected' : '' %>><%= brand.brandName %></option>
+      <% }); %>
+    </select>
+  </div>
+
+  <!-- Price -->
+  <div class="form-group">
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" value="<%= product.price %>" required>
+  </div>
+
+  <!-- Stock Quantity -->
+  <div class="form-group">
+    <label for="stockQuantity">Stock Quantity:</label>
+    <input type="number" id="stockQuantity" name="stockQuantity" value="<%= product.stockQuantity %>" required>
+  </div>
+
+  <!-- Discount Price -->
+  <div class="form-group">
+    <label for="discountPrice">Discount Price:</label>
+    <input type="number" id="discountPrice" name="discountPrice" value="<%= product.discountprice %>">
+  </div>
+
+<!-- Product Images -->
+<div class="form-group">
+  <label for="image">Product Images:</label>
+  <input type="file" id="image" name="image" accept="image/*" multiple>
+  
+  <!-- Crop Modal -->
+  <div id="cropModal" class="modal">
+    <div class="modal-content">
+      <div class="crop-container">
+        <img id="cropImage" src="" alt="Image to crop">
+      </div>
+      <div class="modal-buttons">
+        <button type="button" id="cropButton" class="btn-primary">Crop Image</button>
+        <button type="button" id="cancelCropButton" class="btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Preview Section -->
+  <div id="imagePreview" class="image-preview-container">
+    <!-- Existing Images -->
+    <div id="existingImages">
+      <% if (product.image && product.image.length > 0) { %>
+        <% product.image.forEach((image, index) => { %>
+          <div class="image-container" data-image="<%= image %>">
+            <img src="<%= image %>" alt="Product Image" class="preview-image existing-image">
+            <input type="hidden" name="existingImages[]" value="<%= image %>">
+            <button type="button" class="remove-image" data-index="<%= index %>">&times;</button>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+    <!-- New Images Preview -->
+    <div id="newImagesPreview"></div>
+  </div>
+</div>
+<!-- specification -->
+<div class="form-group">
+  <label for="specification">specification:</label>
+  <input type="text" id="specification" name="specification" value="<%= product.specification%>" required>
+</div>
+
+  <!-- Submit Button -->
+  <button type="submit">Update Product</button>
+</form>
+
+<%- include("../../views/partials/admin/footer1") %>
+
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  
+  <script>
+  let cropper;
+  let selectedFiles = new Map();
+  let removedImages = new Set();
+  
+  // Handle file selection
+  document.getElementById('image').addEventListener('change', function(event) {
+    const files = Array.from(event.target.files);
+    if (files.length > 0) {
+      handleNewImage(files[0]); // Process one file at a time
+    }
+  });
+  
+  // Handle new image selection
+  function handleNewImage(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      openCropModal(e.target.result, file.name);
+    };
+    reader.readAsDataURL(file);
+  }
+  
+  // Open crop modal
+  function openCropModal(imageSrc, fileName) {
+    const modal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropImage');
+    
+    modal.style.display = 'block';
+    cropImage.src = imageSrc;
+    
+    if (cropper) {
+      cropper.destroy();
+    }
+    
+    cropper = new Cropper(cropImage, {
+      aspectRatio: 1,
+      viewMode: 2,
+      autoCropArea: 1,
+    });
+  }
+  
+  // Handle image cropping
+  document.getElementById('cropButton').addEventListener('click', function() {
+    if (!cropper) return;
+    
+    const canvas = cropper.getCroppedCanvas({
+      width: 600,
+      height: 600,
+    });
+    
+    canvas.toBlob(function(blob) {
+      const fileName = `cropped-${Date.now()}.jpg`;
+      const croppedFile = new File([blob], fileName, { type: 'image/jpeg' });
+      
+      // Add to selected files
+      selectedFiles.set(fileName, croppedFile);
+      
+      // Create preview
+      const container = document.createElement('div');
+      container.className = 'image-container';
+      
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(blob);
+      img.className = 'preview-image';
+      
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'remove-image';
+      removeBtn.innerHTML = '&times;';
+      removeBtn.onclick = () => {
+        selectedFiles.delete(fileName);
+        container.remove();
+      };
+      
+      container.appendChild(img);
+      container.appendChild(removeBtn);
+      document.getElementById('newImagesPreview').appendChild(container);
+      
+      // Close modal
+      closeCropModal();
+    }, 'image/jpeg');
+  });
+  
+  // Handle existing image removal
+  document.querySelectorAll('.remove-image').forEach(button => {
+    button.addEventListener('click', function() {
+      const container = this.closest('.image-container');
+      const imagePath = container.dataset.image;
+      removedImages.add(imagePath);
+      container.remove();
+      
+      // Add hidden input for removed image
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'removedImages[]';
+      input.value = imagePath;
+      document.querySelector('form').appendChild(input);
+    });
+  });
+  
+  // Close crop modal
+  document.getElementById('cancelCropButton').addEventListener('click', closeCropModal);
+  
+  function closeCropModal() {
+    const modal = document.getElementById('cropModal');
+    modal.style.display = 'none';
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+  }
+  
+document.querySelector('form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const formData = new FormData(this);
+  
+  // Clear any existing image fields (important!)
+  formData.delete('image');
+  
+  // Add cropped files
+  selectedFiles.forEach((file, fileName) => {
+    formData.append('image', file); // Changed from 'newImages' to 'image'
+  });
+  
+  // Add removed images as a separate field
+  if (removedImages.size > 0) {
+    formData.append('removedImages', Array.from(removedImages));
+  }
+  
+  // Submit the form
+  fetch(this.action, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data.success) {
+      window.location.href = '/admin/product'; // or wherever you want to redirect
+    } else {
+      throw new Error(data.message || 'Error updating product');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Error updating product: ' + error.message);
+  });
+});
+</script>
+<script>
+  document.querySelector(".edit-product-form").addEventListener("submit", function (event) {
+  event.preventDefault(); // Prevent form submission
+
+  let errors = [];
+
+  // Product Name Validation
+  const productName = document.getElementById("name").value.trim();
+  if (!/^[a-zA-Z\s]+$/.test(productName)) {
+    errors.push("Product name must contain only letters and spaces.");
+  }
+
+  // Description Validation
+  const description = document.getElementById("description").value.trim();
+  if (description.length < 3) {
+    errors.push("Description must be at least 3 characters.");
+  }
+
+  // Category Validation
+  const category = document.getElementById("category").value;
+  if (!category) {
+    errors.push("Please select a category.");
+  }
+
+  // Brand Validation
+  const brand = document.getElementById("brand").value;
+  if (!brand) {
+    errors.push("Please select a brand.");
+  }
+
+  // Price Validation
+  const price = parseFloat(document.getElementById("price").value);
+  if (isNaN(price) || price <= 0) {
+    errors.push("Price must be greater than 0.");
+  }
+
+  // Stock Quantity Validation
+  const stockQuantity = parseInt(document.getElementById("stockQuantity").value, 10);
+  if (isNaN(stockQuantity) || stockQuantity <= 0) {
+    errors.push("Stock quantity must be greater than 0.");
+  }
+
+  // Discount Price Validation
+  const discountPrice = parseFloat(document.getElementById("discountPrice").value);
+if (!isNaN(discountPrice) && discountPrice >= price) {
+  errors.push("Discount price must be less than the original price.");
+}
+
+// Specification Validation
+const specification = document.getElementById("specification").value.trim();
+if (specification.length < 5) {
+  errors.push("Specification must be at least 5 characters long.");
+}
+
+// Display Errors or Submit Form
+if (errors.length > 0) {
+  alert(errors.join("\n"));
+} else {
+  // If no errors, submit the form
+  this.submit();
+}
+});
+</script> -->

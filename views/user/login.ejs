@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login V1</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="/user/signup/images/icons/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/user/signup/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/vendor/animate/animate.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/vendor/css-hamburgers/hamburgers.min.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/vendor/select2/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/css/util.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/css/main.css">
+    <style>
+        .login100-form-title { color: #333; font-weight: 600; }
+        .wrap-login100 { background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .login100-pic img { width: 80%; margin: 0 auto; display: block; }
+        .social-btns { margin: 20px 0; text-align: center; }
+        .forgot-pass { display: block; text-align: center; margin: 15px 0; color: #666; }
+        .forgot-pass:hover { color: #333; text-decoration: none; }
+        .alert-danger { padding: 10px; margin: 15px 0; }
+        .btn-primary { background: #667eea; border: none; transition: all 0.3s; }
+        .btn-primary:hover { background: #764ba2; transform: translateY(-2px); }
+        .login100-form-btn { width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="limiter">
+        <div class="wrap-login100">
+            <div class="login100-pic js-tilt" data-tilt>
+                <img src="/user/signup/images/Hacker-PNG-Transparent-Image.webp" alt="IMG">
+            </div>
+
+            <form class="login100-form validate-form" id="loginform" method="post" action="/login">
+                <span class="login100-form-title">Member Login</span>
+
+                <div class="social-btns">
+                    <a href="/auth/google" class="btn btn-outline-danger">
+                        <img src="/user/signup/images/googlesignup.png" 
+                             alt="Google Logo"
+                             style="width: 24px; height: 24px">
+                        Login with Google
+                    </a>
+                </div>
+
+                <div class="wrap-input100 validate-input">
+                    <input class="input100" type="email" name="email" id="email" placeholder="Email">
+                    <span class="focus-input100"></span>
+                    <span class="symbol-input100">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                    </span>
+                    <div id="error1" class="error-message"></div>
+                </div>
+
+                <div class="wrap-input100 validate-input">
+                    <input class="input100" type="password" name="password" id="password" placeholder="Password">
+                    <span class="focus-input100"></span>
+                    <span class="symbol-input100">
+                        <i class="fa fa-lock" aria-hidden="true"></i>
+                    </span>
+                    <div id="error2" class="error-message"></div>
+                </div>
+
+                <% if(locals.message && message.length>0) { %>
+                    <div class="alert alert-danger text-center">
+                        <%= message %>
+                    </div>
+                <% } %>
+
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn btn-primary" type="submit">
+                        Login
+                    </button>
+                </div>
+
+                <div class="text-center p-t-12">
+                    <a class="forgot-pass" href="/forgot-password">
+                        Forgot Password?
+                    </a>
+                </div>
+
+                <div class="text-center p-t-136">
+                    <a class="txt2" href="/signup">
+                        Create your Account
+                        <i class="fa fa-long-arrow-right m-l-5" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/user/signup/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="/user/signup/vendor/bootstrap/js/popper.js"></script>
+    <script src="/user/signup/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/user/signup/vendor/select2/select2.min.js"></script>
+    <script src="/user/signup/vendor/tilt/tilt.jquery.min.js"></script>
+    <script>
+        $('.js-tilt').tilt({
+            scale: 1.1
+        });
+
+        document.getElementById('loginform').addEventListener('submit', function(event) {
+            let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value;
+            let isValid = true;
+
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if (!emailPattern.test(email)) {
+                document.getElementById('error1').innerText = 'Please enter a valid email address.';
+                isValid = false;
+            } else {
+                document.getElementById('error1').innerText = '';
+            }
+
+            if (password.length < 6) {
+                document.getElementById('error2').innerText = 'Password must be at least 6 characters long.';
+                isValid = false;
+            } else {
+                document.getElementById('error2').innerText = '';
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+    <script src="/user/signup/js/main.js"></script>
+</body>
+</html>

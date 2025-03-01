@@ -1,0 +1,723 @@
+<%- include("../../views/partials/admin/header1") %>
+<%- include("../../views/partials/admin/sidebar1") %>
+<%- include("../../views/partials/admin/navbar1") %>
+
+<style>
+  /* General Styles */
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .container {
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    animation: slideInFromTop 0.5s ease-out;
+  }
+
+  .page-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-add-coupon {
+    background: linear-gradient(45deg, #007bff, #00c4ff);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+  }
+
+  .btn-add-coupon:hover {
+    background: linear-gradient(45deg, #0056b3, #0097cc);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.3);
+  }
+
+  /* Card Styles */
+  .card {
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+  }
+
+  .card-body {
+    padding: 25px;
+  }
+
+  /* Table Styles */
+  .coupon-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+  }
+
+  .coupon-table th,
+  .coupon-table td {
+    padding: 15px;
+    text-align: left;
+    color: #34495e;
+  }
+
+  .coupon-table th {
+    background: linear-gradient(45deg, #ecf0f1, #f5f6fa);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 1px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .coupon-table tbody tr {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    animation: fadeInRow 0.5s ease forwards;
+  }
+
+  .coupon-table tbody tr:hover {
+    transform: scale(1.01);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  @keyframes fadeInRow {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .coupon-table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+  .coupon-table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+  .coupon-table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+  .coupon-table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+  .coupon-table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
+  /* Action Buttons */
+  .button-group {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+  }
+
+  .btn-action {
+    border: none;
+    background: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .btn-action:hover {
+    background: rgba(0, 0, 0, 0.05);
+    transform: scale(1.2);
+  }
+
+  .btn-delete:hover { color: #e74c3c; }
+  .btn-edit:hover { color: #27ae60; }
+
+  /* Modal Styles */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    width: 450px;
+    max-width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideIn {
+    from { transform: translateY(-30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes slideInFromTop {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .close {
+    float: right;
+    font-size: 28px;
+    cursor: pointer;
+    color: #7f8c8d;
+    transition: all 0.3s ease;
+  }
+
+  .close:hover {
+    color: #2c3e50;
+    transform: rotate(90deg);
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+  }
+
+  .form-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ecf0f1;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  .form-group input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+    outline: none;
+  }
+
+  .form-group .error {
+    color: #e74c3c;
+    font-size: 12px;
+    position: absolute;
+    bottom: -18px;
+    left: 0;
+    display: none;
+  }
+
+  button[type="submit"] {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+
+  button[type="submit"]:hover {
+    background: linear-gradient(45deg, #27ae60, #219653);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
+  }
+
+  /* Loading Spinner */
+  .loading-overlay {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    border-radius: 15px;
+  }
+
+  .loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .loading-spinner .spinner-border {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-width: 0.3em;
+    color: #3498db;
+    animation: spin 0.8s ease-in-out infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+<div class="container">
+  <div class="page-header">
+    <h2>Coupon Management</h2>
+    <button class="btn-add-coupon" onclick="showModal()">+ Add Coupon</button>
+  </div>
+
+  <div class="card shadow-sm border-0 position-relative">
+    <div class="loading-overlay">
+      <div class="loading-spinner">
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <table class="coupon-table">
+        <thead>
+          <tr>
+            <th>Coupon Code</th>
+            <th>Min Purchase</th>
+            <th>Discount</th>
+            <th>Start Date</th>
+            <th>Expiry Date</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (StoreCoupon.length > 0) { %>
+            <% StoreCoupon.forEach(coupon => { %>
+              <tr>
+                <td><%= coupon.couponCode %></td>
+                <td><%= coupon.minPurchaseAmount.toFixed(2) %></td>
+                <td><%= coupon.discountAmount.toFixed(2) %></td>
+                <td><%= new Date(coupon.date).toLocaleDateString('en-US') %></td>
+                <td><%= new Date(coupon.expiryDate).toLocaleDateString('en-US') %></td>
+                <td class="text-center">
+                  <div class="button-group">
+                    <button class="btn-action btn-delete" onclick="deleteCoupon('<%= coupon._id %>')">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                    <button class="btn-action btn-edit" 
+                      data-id="<%= coupon._id %>"
+                      data-code="<%= coupon.couponCode %>"
+                      data-minpurchase="<%= coupon.minPurchaseAmount %>"
+                      data-discount="<%= coupon.discountAmount %>"
+                      data-date="<%= new Date(coupon.date).toISOString().substring(0, 10) %>"
+                      data-expiry="<%= new Date(coupon.expiryDate).toISOString().substring(0, 10) %>"
+                      onclick="openEditModal(this)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="6" class="text-center text-muted">No coupons found. Add a new coupon to get started.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add Coupon Modal -->
+  <div id="couponModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">×</span>
+      <h2>Create New Coupon</h2>
+      <form id="couponForm">
+        <div class="form-group">
+          <label for="couponCode">Coupon Code</label>
+          <input type="text" id="couponCode" name="couponCode" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <label for="minPurchaseAmount">Minimum Purchase Amount</label>
+          <input type="number" id="minPurchaseAmount" name="minPurchaseAmount" step="0.01" min="0" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <label for="discountAmount">Discount Amount</label>
+          <input type="number" id="discountAmount" name="discountAmount" step="0.01" min="0" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <label for="date">Start Date</label>
+          <input type="date" id="date" name="date" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <label for="expiryDate">Expiry Date</label>
+          <input type="date" id="expiryDate" name="expiryDate" required />
+          <span class="error"></span>
+        </div>
+        <button type="submit">Create Coupon</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Coupon Modal -->
+  <div id="editCouponModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeEditModal()">×</span>
+      <h2>Edit Coupon</h2>
+      <form id="editCouponForm">
+        <input type="hidden" id="editCouponId">
+        <div class="form-group">
+          <label for="editCouponCode">Coupon Code</label>
+          <input type="text" id="editCouponCode" name="couponCode" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <label for="editMinPurchaseAmount">Minimum Purchase Amount</label>
+          <input type="number" id="editMinPurchaseAmount" name="minPurchaseAmount" step="0.01" min="0" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <label for="editDiscountAmount">Discount Amount</label>
+          <input type="number" id="editDiscountAmount" name="discountAmount" step="0.01" min="0" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <label for="editDate">Start Date</label>
+          <input type="date" id="editDate" name="date" required />
+          <span class="error"></span>
+        </div>
+        <div class="form-group">
+          <label for="editExpiryDate">Expiry Date</label>
+          <input type="date" id="editExpiryDate" name="expiryDate" required />
+          <span class="error"></span>
+        </div>
+        <button type="submit">Update Coupon</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Modal controls
+  function showModal() {
+    document.getElementById('couponModal').style.display = 'flex';
+    clearForm('couponForm');
+    // Set min date for date inputs
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = today;
+    document.getElementById('expiryDate').min = today;
+  }
+
+  function closeModal() {
+    document.getElementById('couponModal').style.display = 'none';
+  }
+
+  function openEditModal(button) {
+    const modal = document.getElementById('editCouponModal');
+    document.getElementById('editCouponId').value = button.dataset.id;
+    document.getElementById('editCouponCode').value = button.dataset.code;
+    document.getElementById('editMinPurchaseAmount').value = button.dataset.minpurchase;
+    document.getElementById('editDiscountAmount').value = button.dataset.discount;
+    document.getElementById('editDate').value = button.dataset.date;
+    document.getElementById('editExpiryDate').value = button.dataset.expiry;
+    
+    // Set min date for date inputs
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('editDate').min = today;
+    document.getElementById('editExpiryDate').min = today;
+    
+    clearErrors();
+    modal.style.display = 'flex';
+  }
+
+  function closeEditModal() {
+    document.getElementById('editCouponModal').style.display = 'none';
+  }
+
+  // Form clearing and error handling
+  function clearForm(formId) {
+    document.getElementById(formId).reset();
+    clearErrors();
+  }
+
+  function clearErrors() {
+    document.querySelectorAll('.error').forEach(error => {
+      error.textContent = '';
+      error.style.display = 'none';
+    });
+  }
+
+  function showError(inputId, message) {
+    const errorElement = document.querySelector(`#${inputId} + .error`);
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+  }
+
+  function showLoading(show) {
+    document.querySelector('.loading-overlay').style.display = show ? 'block' : 'none';
+  }
+
+  // Validation function
+  function validateForm(formId) {
+    clearErrors();
+    let isValid = true;
+    const form = document.getElementById(formId);
+    const couponCode = form.querySelector('[name="couponCode"]').value.trim();
+    const minPurchase = parseFloat(form.querySelector('[name="minPurchaseAmount"]').value);
+    const discount = parseFloat(form.querySelector('[name="discountAmount"]').value);
+    const startDate = form.querySelector('[name="date"]').value;
+    const expiryDate = form.querySelector('[name="expiryDate"]').value;
+    
+    // Get field prefixes based on form type
+    const prefix = formId === 'couponForm' ? '' : 'edit';
+
+    // Coupon code: allow mixed characters with special symbols and numbers
+    if (couponCode.length < 3 || couponCode.length > 20) {
+      showError(`${prefix}CouponCode`, 'Coupon code must be 3-20 characters');
+      isValid = false;
+    }
+
+    // Minimum purchase amount: positive number
+    if (isNaN(minPurchase) || minPurchase <= 0) {
+      showError(`${prefix}MinPurchaseAmount`, 'Minimum purchase must be greater than 0');
+      isValid = false;
+    }
+
+    // Discount amount: positive and less than min purchase
+    if (isNaN(discount) || discount <= 0) {
+      showError(`${prefix}DiscountAmount`, 'Discount must be greater than 0');
+      isValid = false;
+    } else if (discount >= minPurchase) {
+      showError(`${prefix}DiscountAmount`, 'Discount must be less than minimum purchase amount');
+      isValid = false;
+    }
+
+    // Dates validation
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const startDateObj = new Date(startDate);
+    const expiryDateObj = new Date(expiryDate);
+    
+    if (!startDate) {
+      showError(`${prefix}Date`, 'Start date is required');
+      isValid = false;
+    } else if (startDateObj < today) {
+      showError(`${prefix}Date`, 'Start date must be today or later');
+      isValid = false;
+    }
+    
+    if (!expiryDate) {
+      showError(`${prefix}ExpiryDate`, 'Expiry date is required');
+      isValid = false;
+    } else if (expiryDateObj <= startDateObj) {
+      showError(`${prefix}ExpiryDate`, 'Expiry date must be after start date');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  // Form submissions
+  document.getElementById('couponForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (validateForm('couponForm')) {
+      await createCoupon();
+    }
+  });
+
+  document.getElementById('editCouponForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (validateForm('editCouponForm')) {
+      await updateCoupon();
+    }
+  });
+
+  async function createCoupon() {
+    const formData = {
+      couponCode: document.getElementById('couponCode').value.trim(),
+      minPurchaseAmount: parseFloat(document.getElementById('minPurchaseAmount').value),
+      discountAmount: parseFloat(document.getElementById('discountAmount').value),
+      date: document.getElementById('date').value,
+      expiryDate: document.getElementById('expiryDate').value
+    };
+
+    try {
+      showLoading(true);
+      const response = await fetch('/admin/Add-Coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: result.message,
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        closeModal();
+        window.location.reload();
+      });
+
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message || 'Failed to create coupon'
+      });
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  async function updateCoupon() {
+    const formData = {
+      couponId: document.getElementById('editCouponId').value,
+      couponCode: document.getElementById('editCouponCode').value.trim(),
+      minPurchaseAmount: parseFloat(document.getElementById('editMinPurchaseAmount').value),
+      discountAmount: parseFloat(document.getElementById('editDiscountAmount').value),
+      date: document.getElementById('editDate').value,
+      expiryDate: document.getElementById('editExpiryDate').value
+    };
+
+    try {
+      showLoading(true);
+      const response = await fetch('/admin/edit-Coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: result.message,
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        closeEditModal();
+        window.location.reload();
+      });
+
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message || 'Failed to update coupon'
+      });
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  async function deleteCoupon(id) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "This action cannot be undone!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3498db',
+      cancelButtonColor: '#e74c3c',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        showLoading(true);
+        const response = await fetch(`/admin/delete-Coupon/${id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.message);
+        }
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: data.message,
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => window.location.reload());
+
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.message || 'Failed to delete coupon'
+        });
+      } finally {
+        showLoading(false);
+      }
+    }
+  }
+
+  // Close modals when clicking outside
+  window.onclick = function(event) {
+    if (event.target.classList.contains('modal')) {
+      closeModal();
+      closeEditModal();
+    }
+  };
+
+  // Initialize date constraints on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = today;
+    document.getElementById('expiryDate').min = today;
+    document.getElementById('editDate').min = today;
+    document.getElementById('editExpiryDate').min = today;
+  });
+</script>
+
+<%- include("../../views/partials/admin/footer1") %>

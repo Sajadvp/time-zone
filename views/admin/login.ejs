@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>AdminLogin</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="/user/signup/images/icons/favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="/user/signup/vendor/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/vendor/animate/animate.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/vendor/css-hamburgers/hamburgers.min.css">
+    <link rel="stylesheet" type="text/css" href=/user/signup/vendor/select2/select2.min.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/css/util.css">
+    <link rel="stylesheet" type="text/css" href="/user/signup/css/main.css">
+</head>
+<body>
+
+    <div class="limiter">
+        <div class="wrap-login100">
+            <div class="login100-pic js-tilt" data-tilt>
+                <img src="/user/signup/images/Hacker-PNG-Transparent-Image.webp" alt="IMG">
+            </div>
+            <div>
+
+            
+           <div>
+            <h2>Admin Login</h2>
+            <form id="loginform" method="post" action="/admin/login">
+                <div class="form-group mt-3px">
+                  <label for="email">Email address</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    name="email"
+                    id="email"
+                    placeholder="Enter email"
+                  />
+                  <div id="error1" class="error-message"></div>
+                </div>
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input
+                    type="password"
+                    class="form-control"
+                    name="password"
+                    id="password"
+                    placeholder="Password"
+                  />
+                  <div id="error2" class="error-message"></div>
+                </div>
+                <%if(locals.message && message.length>0){%>
+                <div class="alert alert-danger text-center">
+                  <%=message%>
+                </div>
+                <%}%>
+                <div class="d-flex justify-content-between align-items-center">
+                    <button type="submit" class="btn btn-primary">Log In</button>
+                    
+                </div>
+                
+              </form>
+            </div>
+            </div>
+  
+        </div>
+    </div>
+
+    <script src="/user/signup/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <script src="/user/signup/vendor/bootstrap/js/popper.js"></script>
+    <script src="/user/signup/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/user/signup/vendor/select2/select2.min.js"></script>
+    <script src="/user/signup/vendor/tilt/tilt.jquery.min.js"></script>
+    <script>
+        $('.js-tilt').tilt({
+            scale: 1.1
+        });
+
+        // Form validation logic
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            let email = document.getElementById('email').value;
+            let password = document.getElementById('password').value;
+            let isValid = true;
+
+            // Email validation
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if (!emailPattern.test(email)) {
+                document.getElementById('emailError').innerText = 'Please enter a valid email address.';
+                isValid = false;
+            } else {
+                document.getElementById('emailError').innerText = '';
+            }
+
+            // Password validation
+            if (password.length < 6) {
+                document.getElementById('passwordError').innerText = 'Password must be at least 6 characters long.';
+                isValid = false;
+            } else {
+                document.getElementById('passwordError').innerText = '';
+            }
+
+            // Prevent form submission if validation fails
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+    <script src="/user/signup/js/main.js"></script>
+
+</body>
+</html>

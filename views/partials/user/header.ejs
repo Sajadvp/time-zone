@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zxx">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Male_Fashion Template" />
+    <meta name="keywords" content="Male_Fashion, unica, creative, html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>TIMEZONE</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../css/elegant-icons.css" />
+    <link rel="stylesheet" href="../css/magnific-popup.css" />
+    <link rel="stylesheet" href="../css/nice-select.css" />
+    <link rel="stylesheet" href="../css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="../css/slicknav.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../user-assets/css/maind134.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <!-- Custom CSS -->
+    <style>
+        /* Header Styles */
+        .header {
+            position: relative;
+            z-index: 500;
+            background-color: #ffffff; /* Clean white background */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for professionalism */
+            padding: 15px 0; /* Consistent padding */
+        }
+
+        /* Navigation Container */
+        .container {
+            max-width: 1200px; /* Slightly wider for modern look */
+        }
+
+        /* Logo */
+        .header__logo img {
+            max-height: 40px; /* Slightly larger logo for visibility */
+            transition: transform 0.3s ease; /* Smooth hover effect */
+        }
+
+        .header__logo:hover img {
+            transform: scale(1.05); /* Slight zoom on hover */
+        }
+
+        /* Navigation Menu */
+        .header__menu ul {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header__menu ul li {
+            margin: 0 20px; /* Increased spacing between menu items */
+        }
+
+        .header__menu ul li a {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333; /* Dark gray for readability */
+            text-decoration: none;
+            transition: color 0.3s ease; /* Smooth hover transition */
+        }
+
+        .header__menu ul li a:hover,
+        .header__menu ul li.active a {
+            color: #fb641b; /* Orange for active/hover, matching branding */
+        }
+
+        /* Navigation Options (Right Side) */
+        .header__nav__option {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px; /* Consistent spacing between items */
+        }
+
+        /* User Dropdown */
+        .dropdown {
+            position: relative;
+        }
+
+        .sign-in-link {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #333; /* Dark gray for readability */
+            text-decoration: none;
+            transition: color 0.3s ease; /* Smooth hover transition */
+        }
+
+        .sign-in-link:hover {
+            color: #fb641b; /* Orange on hover, matching branding */
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #ffffff; /* White background for dropdown */
+            min-width: 180px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Softer shadow */
+            z-index: 1000;
+            border-radius: 6px; /* Rounded corners */
+            border: 1px solid #e0e0e0; /* Light border for separation */
+            padding: 8px 0;
+        }
+
+        .dropdown-content a {
+            font-family: 'Nunito Sans', sans-serif;
+            font-size: 14px;
+            padding: 10px 20px;
+            color: #333; /* Dark gray for readability */
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s, color 0.2s; /* Smooth transitions */
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f8f9fa; /* Light gray background on hover */
+            color: #fb641b; /* Orange on hover, matching branding */
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        /* Icon Wrapper Styles (Wishlist & Cart) */
+        .nav-icon-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #333; /* Dark gray for icons */
+            font-size: 14px;
+            position: relative;
+            padding: 8px 12px;
+            transition: color 0.3s ease; /* Smooth hover transition */
+        }
+
+        .nav-icon-wrapper:hover {
+            color: #fb641b; /* Orange on hover, matching branding */
+        }
+
+        .icon-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .icon-container i {
+            font-size: 22px; /* Slightly larger icons */
+            color: #333; /* Dark gray for icons */
+            transition: color 0.3s ease; /* Smooth hover transition */
+        }
+
+        .item-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ff6161; /* Red for contrast */
+            color: white;
+            border-radius: 50%; /* Circular badge */
+            padding: 4px 8px;
+            font-size: 12px;
+            min-width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            border: 2px solid #ffffff; /* White border for better visibility */
+        }
+
+        .icon-label {
+            margin-top: 4px;
+            font-size: 12px;
+            color: #666; /* Slightly lighter gray for labels */
+            font-weight: 500;
+            text-transform: uppercase; /* Professional touch */
+        }
+
+        /* Canvas Open Icon */
+        .canvas__open {
+            display: none; /* Hide on desktop, handle in mobile media queries */
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 991px) {
+            .header__menu {
+                display: none;
+            }
+
+            .canvas__open {
+                display: block;
+            }
+
+            .header__nav__option {
+                justify-content: flex-end;
+                gap: 15px;
+            }
+
+            .header__logo img {
+                max-height: 30px; /* Smaller logo on mobile */
+            }
+        }
+
+        @media (max-width: 767px) {
+            .header__nav__option {
+                gap: 10px;
+            }
+
+            .nav-icon-wrapper {
+                padding: 6px 8px;
+            }
+
+            .icon-container i {
+                font-size: 18px; /* Smaller icons on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-3 col-md-3 col-6">
+                    <div class="header__logo">
+                        <a href="/"><img src="../user/images.png" height="40" alt="Logo" /></a>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 d-none d-lg-block">
+                    <nav class="header__menu">
+                        <ul>
+                            <li class="active"><a href="/">Home</a></li>
+                            <li><a href="/shopPage">Shop</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-lg-3 col-md-3 col-6">
+                    <div class="header__nav__option">
+                        <% if (user) { %>
+                            <!-- User Dropdown -->
+                            <div class="dropdown">
+                                <a href="#" class="sign-in-link"><%= user.name %></a>
+                                <div class="dropdown-content">
+                                    <a href="/userProfile">Profile</a>
+                                    <a href="/wallet">Wallet</a>
+                                    <a href="/logout">Logout</a>
+                                </div>
+                            </div>
+
+                            <!-- Wishlist Icon -->
+                            <a href="/wishlist" class="nav-icon-wrapper">
+                                <div class="icon-container">
+                                    <i class="far fa-heart"></i>
+                                    <% if (wishlistCount && wishlistCount > 0) { %>
+                                        <span class="item-count"><%= wishlistCount %></span>
+                                    <% } %>
+                                </div>
+                                <span class="icon-label"></span>
+                            </a>
+
+                            <!-- Cart Icon -->
+                            <a href="/cart" class="nav-icon-wrapper">
+                                <div class="icon-container">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <% if (cartCount && cartCount > 0) { %>
+                                        <span class="item-count"><%= cartCount %></span>
+                                    <% } %>
+                                </div>
+                                <span class="icon-label"></span>
+                            </a>
+                        <% } else { %>
+                            <a href="/login" class="sign-in-link">Log In</a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="canvas__open d-lg-none"><i class="fa fa-bars"></i></div>
+        </div>
+    </header>

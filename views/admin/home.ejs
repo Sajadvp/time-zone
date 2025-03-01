@@ -1,0 +1,773 @@
+<%- include("../../views/partials/admin/header1") %> 
+<%- include("../../views/partials/admin/sidebar1") %> 
+<%- include("../../views/partials/admin/navbar1") %>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+<main class="main-content">
+  <div class="dashboard-content">
+    <div class="dashboard-header">
+      <h1>Dashboard Overview</h1>
+      <div class="dropdown">
+        <button class="btn btn-primary shadow-sm" id="generate-report-btn">
+          <i class="fas fa-file-download me-2"></i>Generate Sales Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-6 col-lg-3">
+        <a href="/total-sales" class="card-link">
+          <div class="card animated-card card-1 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="card-title">Total Sales</h5>
+                  <p class="card-text">₹<%= totalSales %></p>
+                </div>
+                <div class="card-icon">
+                  <i class="fas fa-chart-line"></i>
+                </div>
+              </div>
+              <div class="mt-3 text-white-50">
+                <small>All time revenue</small>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <a href="/todays-sales" class="card-link">
+          <div class="card animated-card card-2 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="card-title">Today's Sales</h5>
+                  <p class="card-text">₹<%= todaysSales %></p>
+                </div>
+                <div class="card-icon">
+                  <i class="fas fa-coins"></i>
+                </div>
+              </div>
+              <div class="mt-3 text-white-50">
+                <small><%= new Date().toLocaleDateString() %></small>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <a href="/admin/orders" class="card-link">
+          <div class="card animated-card card-3 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="card-title">Total Orders</h5>
+                  <p class="card-text"><%= totalOrders %></p>
+                </div>
+                <div class="card-icon">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+              </div>
+              <div class="mt-3 text-white-50">
+                <small>All time orders</small>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <a href="/admin/orders" class="card-link">
+          <div class="card animated-card card-4 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="card-title">Pending Orders</h5>
+                  <p class="card-text"><%= pendingOrders %></p>
+                </div>
+                <div class="card-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+              </div>
+              <div class="mt-3 text-white-50">
+                <small>Require attention</small>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Best Selling Highlights -->
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="alert alert-success text-center shadow-sm rounded-pill animate__animated animate__fadeIn">
+          <div class="d-flex align-items-center justify-content-center">
+            <div class="fs-3 me-2">🏆</div>
+            <div><strong>Best Selling Category:</strong> <%= bestCategoryName %></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="alert alert-info text-center shadow-sm rounded-pill animate__animated animate__fadeIn">
+          <div class="d-flex align-items-center justify-content-center">
+            <div class="fs-3 me-2">⭐</div>
+            <div><strong>Best Selling Brand:</strong> <%= bestBrandName %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 10 Best Selling Products -->
+    <div class="row mb-4 animate__animated animate__fadeIn">
+      <div class="col-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title m-0"><i class="fas fa-fire me-2"></i>Top 10 Best Selling Products</h5>
+            <span class="badge bg-light text-primary"><%= bestSellingProducts.length %> products</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th class="ps-3">Product</th>
+                    <th class="text-center">Quantity Sold</th>
+                    <th class="text-end pe-3">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% bestSellingProducts.forEach((item, index) => { %>
+                    <tr class="animate__animated animate__fadeIn animate__delay-<%= index %>s">
+                      <td class="ps-3 fw-medium">
+                        <%= index < 3 ? ['🥇','🥈','🥉'][index] + ' ' : '' %><%= item.productName %>
+                      </td>
+                      <td class="text-center">
+                        <span class="badge bg-success rounded-pill px-3"><%= item.totalQuantity %></span>
+                      </td>
+                      <td class="text-end pe-3 fw-bold text-primary">
+                        ₹<%= item.totalRevenue.toLocaleString('en-IN', {maximumFractionDigits: 2, minimumFractionDigits: 2}) %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 10 Best Selling Categories -->
+    <div class="row mb-4 animate__animated animate__fadeIn">
+      <div class="col-md-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title m-0"><i class="fas fa-trophy me-2"></i>Top 10 Best Selling Categories</h5>
+            <span class="badge bg-warning text-dark">Best: <%= bestCategoryName %></span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th class="ps-3">Category</th>
+                    <th class="text-center">Quantity Sold</th>
+                    <th class="text-end pe-3">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% bestSellingCategories.forEach((item, index) => { %>
+                    <tr class="animate__animated animate__fadeIn animate__delay-<%= index %>s 
+                      <%= item._id === bestCategoryName ? 'table-warning' : '' %>">
+                      <td class="ps-3 fw-medium">
+                        <% if (item._id === bestCategoryName) { %>
+                          <span class="text-danger fw-bold">🔥 <%= item._id %></span>
+                        <% } else { %>
+                          <%= item._id %>
+                        <% } %>
+                      </td>
+                      <td class="text-center">
+                        <span class="badge bg-success rounded-pill px-3"><%= item.totalQuantity %></span>
+                      </td>
+                      <td class="text-end pe-3 fw-bold text-primary">
+                        ₹<%= item.totalRevenue.toLocaleString('en-IN', {maximumFractionDigits: 2, minimumFractionDigits: 2}) %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top 10 Best Selling Brands -->
+    <div class="row mb-4 animate__animated animate__fadeIn">
+      <div class="col-md-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+            <h5 class="card-title m-0"><i class="fas fa-star me-2"></i>Top 10 Best Selling Brands</h5>
+            <span class="badge bg-dark text-white">Best: <%= bestBrandName %></span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                  <tr>
+                    <th class="ps-3">Brand</th>
+                    <th class="text-center">Quantity Sold</th>
+                    <th class="text-end pe-3">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% bestSellingBrands.forEach((item, index) => { %>
+                    <tr class="animate__animated animate__fadeIn animate__delay-<%= index %>s 
+                      <%= item.brandName === bestBrandName ? 'table-warning' : '' %>">
+                      <td class="ps-3 fw-medium">
+                        <% if (item.brandName === bestBrandName) { %>
+                          <span class="text-danger fw-bold">🔥 <%= item.brandName %></span>
+                        <% } else { %>
+                          <%= item.brandName %>
+                        <% } %>
+                      </td>
+                      <td class="text-center">
+                        <span class="badge bg-success rounded-pill px-3"><%= item.totalQuantity %></span>
+                      </td>
+                      <td class="text-end pe-3 fw-bold text-primary">
+                        ₹<%= item.totalRevenue.toLocaleString('en-IN', {maximumFractionDigits: 2, minimumFractionDigits: 2}) %>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="row mt-4 mb-5">
+      <div class="col-md-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title m-0"><i class="fas fa-chart-line me-2"></i>Sales Trend</h5>
+            <select id="chartFilter" class="form-select form-select-sm bg-primary text-white border-0" style="width: auto;">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div id="chart-loading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+            <div id="chart-error" class="alert alert-danger d-none">
+              Failed to load chart data. Please try again later.
+            </div>
+            <canvas id="salesChart" style="height: 400px; width: 100%;" class="d-none"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Report Generation Modal -->
+<div id="salesReportModal" class="modal fade" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="fas fa-file-export me-2"></i>Generate Sales Report</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="reportForm" action="/admin/generate-report" method="POST">
+          <div class="mb-3">
+            <label for="dateRange" class="form-label fw-bold">Select Date Range:</label>
+            <select id="dateRange" name="dateRange" class="form-select">
+              <option value="1day">Last 24 Hours</option>
+              <option value="1week">Last 7 Days</option>
+              <option value="1month">Last 30 Days</option>
+              <option value="3months">Last 3 Months</option>
+              <option value="6months">Last 6 Months</option>
+              <option value="1year">Last Year</option>
+              <option value="custom">Custom Date Range</option>
+            </select>
+          </div>
+          
+          <div id="customDateRange" class="row mb-3 d-none">
+            <div class="col-md-6">
+              <label for="startDate" class="form-label">Start Date:</label>
+              <input type="date" id="startDate" name="startDate" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label for="endDate" class="form-label">End Date:</label>
+              <input type="date" id="endDate" name="endDate" class="form-control">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Report Details:</label>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="showDiscounts" name="showDiscounts" checked>
+                  <label class="form-check-label" for="showDiscounts">
+                    Discount & Coupon Details
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="overallSales" name="overallSales" checked>
+                  <label class="form-check-label" for="overallSales">
+                    Overall Sales Count
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="overallOrders" name="overallOrders" checked>
+                  <label class="form-check-label" for="overallOrders">
+                    Overall Order Amount
+                  </label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="overallDiscount" name="overallDiscount" checked>
+                  <label class="form-check-label" for="overallDiscount">
+                    Overall Discount
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Additional Options:</label>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" id="includeCharts" name="includeCharts" checked>
+              <label class="form-check-label" for="includeCharts">
+                Include Visual Charts
+              </label>
+            </div>
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" id="includeComparison" name="includeComparison">
+              <label class="form-check-label" for="includeComparison">
+                Include Comparison with Previous Period
+              </label>
+            </div>
+          </div>
+
+          <input type="hidden" name="format" id="reportFormat" value="pdf">
+        </form>
+      </div>
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <div class="ms-auto">
+          <button type="button" class="btn btn-success" onclick="submitForm('excel')">
+            <i class="fas fa-file-excel me-1"></i> Excel
+          </button>
+          <button type="button" class="btn btn-danger" onclick="submitForm('pdf')">
+            <i class="fas fa-file-pdf me-1"></i> PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* General Styles */
+  body {
+    background-color: #f8f9fa;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+  }
+  
+  .main-content {
+    padding: 25px;
+    min-height: calc(100vh - 60px);
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 1.8rem;
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  /* Card Styles */
+  .card-link {
+    text-decoration: none;
+    display: block;
+    height: 100%;
+  }
+  
+  .animated-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+  }
+  
+  .animated-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+  
+  .card-1 {
+    background: linear-gradient(135deg, #4e73df, #224abe);
+    color: white;
+  }
+  
+  .card-2 {
+    background: linear-gradient(135deg, #1cc88a, #13855c);
+    color: white;
+  }
+  
+  .card-3 {
+    background: linear-gradient(135deg, #f6c23e, #dda20a);
+    color: white;
+  }
+  
+  .card-4 {
+    background: linear-gradient(135deg, #e74a3b, #c82333);
+    color: white;
+  }
+  
+  .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .card-text {
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+  
+  .card-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+  }
+  
+  /* Table Styles */
+  .table {
+    margin-bottom: 0;
+  }
+  
+  .table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+  }
+  
+  .table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+  }
+  
+  /* Badges */
+  .badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+  }
+  
+  /* Animations */
+  .animate__delay-0s { animation-delay: 0.1s; }
+  .animate__delay-1s { animation-delay: 0.15s; }
+  .animate__delay-2s { animation-delay: 0.2s; }
+  .animate__delay-3s { animation-delay: 0.25s; }
+  .animate__delay-4s { animation-delay: 0.3s; }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    
+    .card-text {
+      font-size: 1.5rem;
+    }
+    
+    .alert {
+      margin-bottom: 15px;
+    }
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let salesChart;
+  let chartLoading = true;
+  
+  // Show Bootstrap modal properly
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize date fields with defaults
+    const today = new Date();
+    document.getElementById('endDate').valueAsDate = today;
+    
+    const lastMonth = new Date();
+    lastMonth.setMonth(today.getMonth() - 1);
+    document.getElementById('startDate').valueAsDate = lastMonth;
+    
+    // Set up modal trigger
+    const generateReportBtn = document.getElementById('generate-report-btn');
+    generateReportBtn.addEventListener('click', () => {
+      const myModal = new bootstrap.Modal(document.getElementById('salesReportModal'));
+      myModal.show();
+    });
+    
+    // Initial chart load
+    updateChart('daily');
+  });
+  
+  // Show/hide custom date range based on selection
+  document.getElementById('dateRange').addEventListener('change', function() {
+    const customDateRange = document.getElementById('customDateRange');
+    if (this.value === 'custom') {
+      customDateRange.classList.remove('d-none');
+    } else {
+      customDateRange.classList.add('d-none');
+    }
+  });
+  
+  // Function to submit form with format
+  function submitForm(format) {
+    document.getElementById('reportFormat').value = format;
+    
+    // Validate dates if custom range is selected
+    if (document.getElementById('dateRange').value === 'custom') {
+      const startDate = document.getElementById('startDate').value;
+      const endDate = document.getElementById('endDate').value;
+      
+      if (!startDate || !endDate) {
+        alert('Please select both start and end dates for custom date range');
+        return;
+      }
+      
+      if (new Date(startDate) > new Date(endDate)) {
+        alert('Start date cannot be after end date');
+        return;
+      }
+    }
+    
+    // Submit the form
+    document.getElementById('reportForm').submit();
+  }
+  
+  // Function to fetch data with error handling
+  async function fetchSalesData(filter) {
+    showChartLoading(true);
+    try {
+      const response = await fetch(`/admin/sales-data?filter=${filter}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      showChartLoading(false);
+      showChartError(false);
+      return data;
+    } catch (error) {
+      console.error('Error fetching sales data:', error);
+      showChartLoading(false);
+      showChartError(true);
+      return { labels: [], sales: [] };
+    }
+  }
+  
+  // Helper functions for chart loading states
+  function showChartLoading(isLoading) {
+    const loadingEl = document.getElementById('chart-loading');
+    const chartEl = document.getElementById('salesChart');
+    
+    if (isLoading) {
+      loadingEl.classList.remove('d-none');
+      chartEl.classList.add('d-none');
+    } else {
+      loadingEl.classList.add('d-none');
+      chartEl.classList.remove('d-none');
+    }
+  }
+  
+  function showChartError(hasError) {
+    const errorEl = document.getElementById('chart-error');
+    const chartEl = document.getElementById('salesChart');
+    
+    if (hasError) {
+      errorEl.classList.remove('d-none');
+      chartEl.classList.add('d-none');
+    } else {
+      errorEl.classList.add('d-none');
+    }
+  }
+  
+  // Function to render chart with enhanced styling
+  function renderChart(data) {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    
+    if (salesChart) {
+      salesChart.destroy();
+    }
+    
+    // Calculate gradients
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(78, 115, 223, 0.4)');
+    gradient.addColorStop(1, 'rgba(78, 115, 223, 0.0)');
+    
+    salesChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: data.labels,
+        datasets: [{
+          label: 'Sales (₹)',
+          data: data.sales,
+          backgroundColor: gradient,
+          borderColor: 'rgba(78, 115, 223, 1)',
+          borderWidth: 3,
+          tension: 0.4,
+          pointRadius: 4,
+          pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+          pointBorderColor: 'rgba(255, 255, 255, 1)',
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: 'rgba(78, 115, 223, 1)',
+          pointHoverBorderColor: 'rgba(255, 255, 255, 1)',
+          pointHoverBorderWidth: 2,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: 'rgba(200, 200, 200, 0.15)',
+              drawBorder: false
+            },
+            ticks: {
+              callback: function(value) {
+                return '₹' + value.toLocaleString('en-IN');
+              },
+              padding: 10,
+              font: {
+                size: 11,
+                family: "'Roboto', sans-serif"
+              }
+            }
+          },
+          x: {
+            grid: {
+              display: false,
+              drawBorder: false
+            },
+            ticks: {
+              padding: 10,
+              font: {
+                size: 11,
+                family: "'Roboto', sans-serif"
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              font: {
+                size: 12,
+                family: "'Roboto', sans-serif"
+              },
+              usePointStyle: true,
+              padding: 20
+            }
+          },
+          tooltip: {
+            enabled: true,
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleFont: {
+              size: 13,
+            },
+            bodyFont: {
+              size: 13,
+            },
+            padding: 12,
+            cornerRadius: 6,
+            caretSize: 6,
+            callbacks: {
+              label: function(context) {
+                let label = context.dataset.label || '';
+                if (label) {
+                  label += ': ';
+                }
+                if (context.parsed.y !== null) {
+                  label += '₹' + context.parsed.y.toLocaleString('en-IN');
+                }
+                return label;
+              }
+            }
+          }
+        },
+        animation: {
+          duration: 1000,
+          easing: 'easeInOutQuad',
+        },
+        elements: {
+          line: {
+            borderJoinStyle: 'round'
+          }
+        },
+        interaction: {
+          mode: 'index',
+          intersect: false,
+        },
+        layout: {
+          padding: {
+            left: 10,
+            right: 10,
+            top: 20,
+            bottom: 10
+          }
+        }
+      }
+    });
+  }
+  
+  // Function to update chart based on filter
+  async function updateChart(filter) {
+    const data = await fetchSalesData(filter);
+    if (data.labels.length > 0) {
+      renderChart(data);
+    }
+  }
+  
+  // Event listener for chart filter change
+  document.getElementById('chartFilter').addEventListener('change', (event) => {
+    updateChart(event.target.value);
+  });
+</script>
+
+<%- include("../../views/partials/admin/footer1") %>

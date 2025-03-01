@@ -1,0 +1,506 @@
+<%- include("../../views/partials/admin/header1") %>
+<%- include("../../views/partials/admin/sidebar1") %>
+<%- include("../../views/partials/admin/navbar1") %>
+  <!-- Add Product Form Page -->
+  <div class="add-product-container">
+    <h1>Add New Product</h1>
+    <h3><%=error%></h3>
+    <form
+      action="/admin/products/add"
+      method="POST"
+      enctype="multipart/form-data"
+      id="productForm"
+    >
+      <!-- Product Name -->
+      <div class="form-group">
+        <label for="productName">Product Name</label>
+        <input type="text" id="productName" name="productName" required />
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description"></textarea>
+      </div>
+
+      <!-- Category -->
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category" name="category" required>
+          <option value="">Select Category</option>
+          <% categories.forEach(category => { %>
+          <option value="<%= category._id %>"><%= category.name %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <!-- Brand -->
+      <div class="form-group">
+        <label for="brand">Brand</label>
+        <select id="brand" name="brand" required>
+          <option value="">Select Brand</option>
+          <% brand.forEach(brand => { %>
+          <option value="<%= brand._id %>"><%= brand.brandName %></option>
+          <% }); %>
+        </select>
+      </div>
+
+      <!-- Price -->
+      <div class="form-group">
+        <label for="price">Price</label>
+        <input type="number" id="price" name="price" required />
+      </div>
+
+      <!-- Stock Quantity -->
+      <div class="form-group">
+        <label for="stockQuantity">Stock Quantity</label>
+        <input type="number" id="stockQuantity" name="stockQuantity" required />
+      </div>
+
+      <!-- Discount Price -->
+      <div class="form-group">
+        <label for="discountprice">Discount Price</label>
+        <input
+          type="number"
+          id="discountprice"
+          name="discountprice"
+          value="0"
+        />
+      </div>
+
+      <!-- Product Images -->
+      <!-- <div class="form-group">
+        <label for="image">Product Images</label>
+        <input type="file" id="image" name="image" multiple onchange="previewImages(event)" />
+        <div id="imagePreview"></div> 
+        <p id="imageValidationMessage" style="color: red;"></p> <
+      </div> -->
+
+      <!-- Product Images -->
+      <div class="form-group">
+        <label for="image">Product Images</label>
+        <input
+          type="file"
+          id="image"
+          name="image"
+          accept="image/*"
+          multiple
+          onchange="prepareCrop(event)"
+        />
+        <div id="imagePreview"></div>
+        <p id="imageValidationMessage" style="color: red"></p>
+      </div>
+
+      <!-- Cropping Modal -->
+      <div id="cropModal" style="display: none">
+        <div class="crop-container">
+          <img id="cropImage" alt="Crop Image" />
+        </div>
+        <button type="button" id="cropButton">Crop & Save</button>
+        <button type="button" id="cancelCropButton">Cancel</button>
+      </div>
+
+      <!-- Specification -->
+      <div class="form-group">
+        <label for="specification">Specification</label>
+        <textarea id="specification" name="specification"></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit">Add Product</button>
+    </form>
+  </div>
+
+  <%- include("../../views/partials/admin/footer") %>
+</div>
+
+<!-- CSS Styles -->
+<style>
+  .crop-container {
+    width: 100%;
+    max-height: 500px;
+    overflow: hidden;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  #cropImage {
+    max-width: 100%;
+    max-height: 500px;
+  }
+
+  #cropModal {
+    position: fixed;
+    top: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    z-index: 9999;
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+  }
+
+  .remove-cropped-image {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+  }
+
+  .remove-cropped-image:hover {
+    background-color: darkred;
+  }
+
+  /* ////////// */
+
+  .add-product-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  label {
+    font-size: 16px;
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select,
+  input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #218838;
+  }
+
+  #imagePreview {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  #imagePreview .image-container {
+    position: relative;
+    margin: 5px;
+  }
+
+  #imagePreview img {
+    width: 100px;
+    height: 100px;
+    border-radius: 5px;
+  }
+
+  .remove-icon {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 20px;
+    color: red;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    padding: 5px;
+  }
+
+  .remove-icon:hover {
+    background: rgba(255, 255, 255, 1);
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+<!-- JavaScript for Image Preview, Removal, and Validation -->
+<script>
+  let cropper;
+  let selectedFiles = [];
+
+  function prepareCrop(event) {
+
+    // const preview = document.getElementById("imagePreview");
+    // preview.innerHTML = ""; // Clear previous previews
+    const validationMessage = document.getElementById("imageValidationMessage");
+    console.log(selectedFiles.length);
+
+    // Check if the number of selected images is within the valid range
+    if (selectedFiles.length < 2) {
+      validationMessage.textContent = "Please select at least 3 images.";
+    } else if (selectedFiles.length === 4 ) {
+      validationMessage.textContent = "your maximum image length is 4.";
+      // return;
+    } else {
+      validationMessage.textContent = ""; // Clear any validation messages
+    }
+
+    const files = event.target.files;
+    if (files.length > 0) {
+      const file = files[0]; // Handle one file at a time for cropping
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const cropModal = document.getElementById("cropModal");
+        const cropImage = document.getElementById("cropImage");
+
+        cropImage.src = e.target.result; // Set image in cropper
+        cropModal.style.display = "block"; // Show modal
+
+        // Initialize Cropper.js
+        if (cropper) cropper.destroy(); // Destroy any existing cropper
+        cropper = new Cropper(cropImage, {
+          aspectRatio: 1, // Adjust aspect ratio if needed
+          viewMode: 2,
+        });
+      };
+
+      reader.readAsDataURL(file);
+    }
+  }
+
+  document.getElementById("cropButton").addEventListener("click", () => {
+    const cropModal = document.getElementById("cropModal");
+
+    if (cropper) {
+      // Get cropped image
+      const canvas = cropper.getCroppedCanvas({
+        width: 300,
+        height: 300,
+      });
+
+      canvas.toBlob((blob) => {
+        const fileInput = document.getElementById("image");
+
+        // Convert blob to a file and append it to selectedFiles
+        const croppedFile = new File([blob], `cropped-${Date.now()}.jpg`, {
+          type: "image/jpeg",
+        });
+        selectedFiles.push(croppedFile);
+
+        // Update file input with cropped files
+        fileInput.files = createFileList(selectedFiles);
+
+        // Display cropped image in preview
+        const preview = document.getElementById("imagePreview");
+
+        // Create the image element
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(croppedFile);
+        img.style.width = "100px";
+        img.style.height = "100px";
+
+        // Create the remove button
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "Remove";
+        removeButton.classList.add("remove-cropped-image");
+        removeButton.onclick = () => removeCroppedImage(croppedFile, img);
+
+        // Create a container for the cropped image and the remove button
+        const imageContainer = document.createElement("div");
+        imageContainer.classList.add("image-container");
+        imageContainer.appendChild(img);
+        imageContainer.appendChild(removeButton);
+
+        // Append to the preview section
+        preview.appendChild(imageContainer);
+      });
+
+      cropModal.style.display = "none"; // Close modal
+      cropper.destroy(); // Destroy cropper instance
+    }
+  });
+
+  // Function to remove the cropped image
+  function removeCroppedImage(croppedFile, imgElement) {
+    // Remove from the selectedFiles array
+    const index = selectedFiles.indexOf(croppedFile);
+    if (index > -1) {
+      selectedFiles.splice(index, 1);
+    }
+
+    // Remove the image element from the preview
+    imgElement.parentElement.remove();
+
+    // Update the file input
+    document.getElementById("image").files = createFileList(selectedFiles);
+  }
+
+  // Helper function to create a new FileList from selected files
+  function createFileList(files) {
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => dataTransfer.items.add(file));
+    return dataTransfer.files;
+  }
+
+  document.getElementById("cancelCropButton").addEventListener("click", () => {
+    const cropModal = document.getElementById("cropModal");
+    cropModal.style.display = "none";
+
+    if (cropper) cropper.destroy(); // Destroy cropper instance
+  });
+
+  function createFileList(files) {
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => dataTransfer.items.add(file));
+    return dataTransfer.files;
+  }
+
+  //////////////////////////////////////////////
+
+  function previewImages(event) {
+    const files = event.target.files;
+    const preview = document.getElementById("imagePreview");
+    preview.innerHTML = ""; // Clear previous previews
+    const validationMessage = document.getElementById("imageValidationMessage");
+
+    // Check if the number of selected images is within the valid range
+    if (files.length < 3) {
+      validationMessage.textContent = "Please select at least 3 images.";
+    } else if (files.length > 5) {
+      validationMessage.textContent = "You can select a maximum of 5 images.";
+    } else {
+      validationMessage.textContent = ""; // Clear any validation messages
+    }
+
+    // Store files in an array
+    selectedFiles = Array.from(files);
+
+    // Preview images
+    selectedFiles.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imgElement = document.createElement("img");
+        imgElement.src = e.target.result;
+
+        // Create a cross icon for each image
+        const crossIcon = document.createElement("span");
+        crossIcon.textContent = "×"; // Unicode cross character
+        crossIcon.classList.add("remove-icon");
+        crossIcon.onclick = function () {
+          removeImage(index);
+        };
+
+        const imageContainer = document.createElement("div");
+        imageContainer.classList.add("image-container"); // Add a class for styling
+        imageContainer.appendChild(imgElement);
+        imageContainer.appendChild(crossIcon);
+        preview.appendChild(imageContainer);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function removeImage(index) {
+    selectedFiles.splice(index, 1); // Remove the image from the array
+    document.getElementById("image").files = createFileList(selectedFiles); // Update file input
+
+    // Re-render image preview
+    previewImages({ target: { files: selectedFiles } });
+  }
+
+  function createFileList(files) {
+    const dataTransfer = new DataTransfer();
+    files.forEach((file) => dataTransfer.items.add(file));
+    return dataTransfer.files;
+  }
+
+  
+  // Validation function
+  document.getElementById("productForm").addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent form submission
+
+    let errors = [];
+    
+    // Product Name Validation
+    const productName = document.getElementById("productName").value.trim();
+if (!/^[A-Z][a-zA-Z0-9\s'-]*$/.test(productName)) {
+  errors.push("Product name must start with a capital letter and can contain letters, numbers, spaces, apostrophes, and dashes.");
+}
+
+
+    // Description Validation
+    const description = document.getElementById("description").value.trim();
+    if (description.length < 3) {
+      errors.push("Description must be at least 3 characters.");
+    }
+
+    // Category Validation
+    const category = document.getElementById("category").value;
+    if (!category) {
+      errors.push("Please select a category.");
+    }
+
+    // Brand Validation
+    const brand = document.getElementById("brand").value;
+    if (!brand) {
+      errors.push("Please select a brand.");
+    }
+
+    // Price Validation
+    const price = parseFloat(document.getElementById("price").value);
+    if (isNaN(price) || price <= 0) {
+      errors.push("Price must be greater than 0.");
+    }
+
+    // Stock Quantity Validation
+    const stockQuantity = parseInt(document.getElementById("stockQuantity").value, 10);
+    if (isNaN(stockQuantity) || stockQuantity <= 0) {
+      errors.push("Stock quantity must be greater than 0.");
+    }
+
+    // Discount Price Validation
+    const discountPrice = parseFloat(document.getElementById("discountprice").value);
+    if (isNaN(discountPrice) || discountPrice < 0 || discountPrice >= price) {
+      errors.push("Discount price must be less than price and greater than 0.");
+    }
+
+    // Image Validation
+    const images = document.getElementById("image").files;
+    if (images.length < 3) {
+      errors.push("Please choose at least 3 images.");
+    }
+
+    // Specification Validation
+    const specification = document.getElementById("specification").value.trim();
+    if (specification.length < 3) {
+      errors.push("Specification must be at least 3 characters.");
+    }
+
+    // Show errors or submit the form
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+    } else {
+      alert("Product added successfully!");
+      this.submit();
+    }
+  });
+</script>

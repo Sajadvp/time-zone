@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coupons - Time Zone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <!-- FontAwesome for user icon -->
+    <style>
+      /* General Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+    
+      body {
+        background-color: #f8f9fa;
+        color: #333;
+      }
+    
+      /* Navbar Styles */
+      .navbar {
+        background: #2874f0;
+        padding: 1rem 2rem;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+    
+      .nav-content {
+        max-width: 1300px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    
+      .navbar h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+    
+      /* Main Content Layout */
+      .container {
+        max-width: 1300px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+      }
+    
+      /* Sidebar Styles */
+      .sidebar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        height: fit-content;
+      }
+    
+      .menu-list {
+        list-style: none;
+      }
+    
+      .menu-item {
+        margin-bottom: 0.5rem;
+      }
+    
+      .menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: #555;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+    
+      .menu-link.active {
+        background: #2874f0;
+        color: white;
+      }
+    
+      .menu-link:hover:not(.active) {
+        background: #f8f9fa;
+        color: #efb033;
+      }
+    
+      /* Coupon Content Styles */
+      .profile-content {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      }
+    
+      .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f0f0f0;
+      }
+    
+      /* Coupon Grid Styles */
+      .coupon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+      }
+    
+      /* Coupon Card Styles */
+      .coupon-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+    
+      .coupon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+    
+      .coupon-card.valid {
+        border-left: 4px solid #28a745;
+      }
+    
+      .coupon-card.expired {
+        border-left: 4px solid #dc3545;
+        opacity: 0.7;
+      }
+    
+      /* Coupon Details */
+      .coupon-details {
+        flex: 1;
+      }
+    
+      .coupon-code {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+    
+      .coupon-code span {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2874f0;
+      }
+    
+      .copy-btn {
+        background: #2874f0;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: background 0.3s ease;
+      }
+    
+      .copy-btn:hover {
+        background: #1a5bbf;
+      }
+    
+      .coupon-info {
+        margin-bottom: 1rem;
+      }
+    
+      .coupon-info p {
+        margin: 0.5rem 0;
+        color: #555;
+      }
+    
+      .coupon-dates {
+        font-size: 0.9rem;
+        color: #777;
+      }
+    
+      .coupon-dates p {
+        margin: 0.3rem 0;
+      }
+    
+      /* Coupon Status */
+      .coupon-status {
+        text-align: right;
+        margin-top: 1rem;
+      }
+    
+      .valid {
+        color: #28a745;
+        font-weight: 600;
+      }
+    
+      .expired {
+        color: #dc3545;
+        font-weight: 600;
+      }
+    
+      /* No Coupons Message */
+      .no-coupons {
+        text-align: center;
+        color: #666;
+        font-size: 1.1rem;
+        margin-top: 2rem;
+      }
+    
+      /* Pagination Styles */
+      .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 2rem;
+      }
+    
+      .pagination-btn {
+        background: #2874f0;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        margin: 0 0.5rem;
+        transition: background 0.3s ease;
+      }
+    
+      .pagination-btn:hover {
+        background: #1a5bbf;
+      }
+    
+      .page-info {
+        font-size: 0.9rem;
+        color: #555;
+        margin: 0 1rem;
+      }
+    </style>
+    <style>
+      .nav-link {
+          font-weight: bold; /* Make text bold */
+          position: relative; /* Needed for hover underline */
+      }
+
+      .nav-link::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: -2px; /* Position the underline */
+          width: 0;
+          height: 2px;
+          background-color: black; /* Color of underline */
+          transition: width 0.3s ease-in-out; /* Smooth effect */
+      }
+
+      .nav-link:hover::after {
+          width: 100%; /* Full width on hover */
+      }
+  </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-light">
+      <div class="container-fluid">
+          <!-- Left Side (Brand) -->
+          <a class="navbar-brand fw-bold" href="/">TIME ZONE.</a>
+  
+          <!-- Centered Navigation Links -->
+          <div class="mx-auto">
+              <ul class="navbar-nav d-flex flex-row gap-4">
+                  <li class="nav-item">
+                      <a class="nav-link" href="/">Home</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="/shopPage">Shop</a>
+                  </li>
+              </ul>
+          </div>
+  
+          <!-- Right Side (User Icon) -->
+          <div>
+              <a href="#" class="nav-link">
+                  <i class="fas fa-user fs-4"></i> <!-- FontAwesome user icon -->
+              </a>
+          </div>
+      </div>
+  </nav>
+    <!-- Main Content -->
+    <div class="container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <ul class="menu-list">
+          <li class="menu-item">
+            <a href="/userProfile" class="menu-link">Profile Details</a>
+          </li>
+          <li class="menu-item">
+            <a href="/cart" class="menu-link">My Cart</a>
+          </li>
+          <li class="menu-item">
+            <a href="/orders" class="menu-link">My Orders</a>
+          </li>
+          <li class="menu-item">
+            <a href="/wishlist" class="menu-link">My Wishlist</a>
+          </li>
+          <li class="menu-item">
+            <a href="/wallet" class="menu-link">My Wallet</a>
+          </li>
+          <li class="menu-item">
+            <a href="/coupon" class="menu-link active">Coupons</a>
+          </li>
+          <li class="menu-item">
+            <a href="/helpcenter" class="menu-link">Help Center</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Coupon Content -->
+      <div class="profile-content">
+        <h2 class="section-title">Available Coupons</h2>
+      
+        <% if (coupons.length > 0) { %>
+          <div class="coupon-grid">
+            <% coupons.forEach((coupon, index) => { %>
+              <div class="coupon-card <%= coupon.isValid ? 'valid' : 'expired' %>">
+                <div class="coupon-details">
+                  <div class="coupon-code">
+                    <span><%= coupon.couponCode %></span>
+                    <button class="copy-btn" onclick="copyToClipboard('<%= index %>')">
+                      📋 Copy
+                    </button>
+                    <span id="couponCode<%= index %>" style="display: none">
+                      <%= coupon.couponCode %>
+                    </span>
+                  </div>
+                  <div class="coupon-info">
+                    <p>Get ₹<%= coupon.discountAmount %> off</p>
+                    <p>on orders above ₹<%= coupon.minPurchaseAmount %></p>
+                  </div>
+                  <div class="coupon-dates">
+                    <p>Issued on: <%= new Date(coupon.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) %></p>
+                    <p>Expires on: <%= coupon.formattedExpiry %></p>
+                  </div>
+                </div>
+                <div class="coupon-status">
+                  <% if (coupon.isValid) { %>
+                    <span class="valid">✔ Valid</span>
+                  <% } else { %>
+                    <span class="expired">✘ Expired</span>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <p class="no-coupons">No coupons available.</p>
+        <% } %>
+      
+        <!-- Pagination -->
+        <div class="pagination">
+          <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>" class="pagination-btn">⬅ Previous</a>
+          <% } %>
+          <span class="page-info">Page <%= currentPage %> of <%= totalPages %></span>
+          <% if (currentPage < totalPages) { %>
+            <a href="?page=<%= currentPage + 1 %>" class="pagination-btn">Next ➡</a>
+          <% } %>
+        </div>
+      </div>
+
+    <script>
+      function copyToClipboard(index) {
+        const couponText = document.getElementById("couponCode" + index).innerText;
+        navigator.clipboard
+          .writeText(couponText)
+          .then(() => {
+            Swal.fire({
+              icon: "success",
+              title: "Copied!",
+              text: "Coupon code copied: " + couponText,
+              showConfirmButton: false,
+              timer: 2000,
+            });
+          })
+          .catch((err) => {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Failed to copy the coupon!",
+            });
+            console.error("Failed to copy: ", err);
+          });
+      }
+    </script>
+  </body>
+</html>

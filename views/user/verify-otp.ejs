@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify OTP</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      }
+
+      .container {
+          background: white;
+          padding: 2.5rem;
+          border-radius: 20px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          width: 90%;
+          max-width: 400px;
+          text-align: center;
+      }
+
+      h1 {
+          color: #2c3e50;
+          margin-bottom: 1.5rem;
+          font-size: 1.8rem;
+      }
+
+      form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.2rem;
+      }
+
+      input {
+          padding: 12px 15px;
+          border: 2px solid #e0e0e0;
+          border-radius: 8px;
+          font-size: 1rem;
+          transition: border-color 0.3s ease;
+      }
+
+      input:focus {
+          outline: none;
+          border-color: #27ae60;
+      }
+
+      button {
+          background: #27ae60;
+          color: white;
+          padding: 12px;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: background 0.3s ease;
+      }
+
+      button:hover {
+          background: #219a52;
+      }
+
+      .logo {
+          width: 60px;
+          margin-bottom: 1.5rem;
+      }
+  </style>
+</head>
+<body>
+  <div class="container">
+      <svg class="logo" viewBox="0 0 24 24" fill="#27ae60" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 17L6 21V17H4C2.89543 17 2 16.1046 2 15V5C2 3.89543 2.89543 3 4 3H20C21.1046 3 22 3.89543 22 5V15C22 16.1046 21.1046 17 20 17H18V21L12 17Z"/>
+      </svg>
+      <h1>Reset Password</h1>
+      <form id="verifyForm">
+          <input type="text" name="otp" placeholder="Enter OTP" required>
+          <input type="password" name="newPassword" placeholder="New Password" required>
+          <button type="submit">Reset Password</button>
+      </form>
+  </div>
+
+    <script>
+        document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const payload = {
+                otp: formData.get('otp'),
+                newPassword: formData.get('newPassword')
+            };
+
+            try {
+                const response = await fetch('/forgot-verify', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: result.message
+                    }).then(() => {
+                        window.location.href = '/login'; // Redirect to login
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+</html>

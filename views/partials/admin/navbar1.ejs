@@ -1,0 +1,226 @@
+<style>
+  :root {
+    --primary-color: #2a52be;
+    --secondary-color: #f8f9fa;
+    --accent-color: #e91e63;
+    --text-color: #333;
+    --transition-speed: 0.3s;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background-color: #f5f5f7;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: linear-gradient(to right, #fff, var(--secondary-color));
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .header:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    position: relative;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .logo::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 3px;
+    bottom: -5px;
+    left: 0;
+    background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+    transition: width var(--transition-speed) ease;
+  }
+  
+  .logo:hover::after {
+    width: 100%;
+  }
+  
+  .search-box {
+    position: relative;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .search-box input {
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    border: 2px solid transparent;
+    border-radius: 50px;
+    background-color: rgba(0, 0, 0, 0.04);
+    width: 200px;
+    transition: all var(--transition-speed) ease;
+    font-size: 0.9rem;
+  }
+  
+  .search-box::before {
+    content: '\f002';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .search-box input:focus {
+    width: 250px;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(42, 82, 190, 0.2);
+    outline: none;
+    background-color: white;
+  }
+  
+  .search-box:hover input {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+  
+  .dropdown {
+    position: relative;
+  }
+  
+  .dropdown-toggle {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    background-color: rgba(0, 0, 0, 0.04);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .dropdown-toggle:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 180px;
+    padding: 0.5rem 0;
+    list-style: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all var(--transition-speed) ease;
+  }
+  
+  .dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  
+  .dropdown-item {
+    display: block;
+    padding: 0.6rem 1rem;
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+  
+  .dropdown-item:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    padding-left: 1.5rem;
+  }
+  
+  .dropdown-divider {
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.08);
+    margin: 0.5rem 0;
+    border: none;
+  }
+  
+  .text-danger {
+    color: #dc3545;
+  }
+  
+  @media (max-width: 768px) {
+    .header {
+      padding: 0.8rem 1rem;
+    }
+    
+    .header-left {
+      gap: 1rem;
+    }
+    
+    .search-box input {
+      width: 150px;
+    }
+    
+    .search-box input:focus {
+      width: 180px;
+    }
+  }
+</style>
+ <!-- Main Content -->
+ <div class="content-wrapper">
+      <header class="header">
+        <div class="header-left">
+          <div class="logo">TIME ZONE.</div>
+          <div class="search-box">
+            <input type="text" placeholder="Search..." />
+          </div>
+        </div>
+        <div class="dropdown">
+          <i
+            class="fas fa-user dropdown-toggle"
+            id="dropdownMenuButton"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            style="cursor: pointer"
+          ></i>
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" href="#">Profile</a></li>
+            <li><a class="dropdown-item" href="#">Settings</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item text-danger" href="/admin/logout"
+                >Logout</a
+              >
+            </li>
+          </ul>
+        </div>
+      </header>
+
