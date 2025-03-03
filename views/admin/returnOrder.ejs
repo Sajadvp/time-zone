@@ -63,10 +63,10 @@
                                     <td>₹<%= request?.orderId?.totalAmount %></td>
                                     <td>
                                         <% if (request.status === 'Pending') { %>
-                                            <a href="/admin/return/approve/<%= request._id %>" 
-                                               class="btn btn-sm btn-outline-success">
+                                            <button class="btn btn-sm btn-outline-success" 
+                                                    onclick="openAcceptModal('<%= request._id %>')">
                                                 Approve
-                                            </a>
+                                            </button>
                                             <button class="btn btn-sm btn-outline-danger" 
                                                     onclick="openRejectModal('<%= request._id %>')">
                                                 Reject
@@ -90,7 +90,7 @@
             <% if (currentPage > 1) { %>
                 <li class="page-item">
                     <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
+                        <span aria-hidden="true">«</span>
                     </a>
                 </li>
             <% } %>
@@ -104,13 +104,14 @@
             <% if (currentPage < totalPages) { %>
                 <li class="page-item">
                     <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
+                        <span aria-hidden="true">»</span>
                     </a>
                 </li>
             <% } %>
         </ul>
     </nav>
 </div>
+
 <!-- Reject Modal -->
 <div id="rejectModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
@@ -118,7 +119,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">Reject Return Request</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">×</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -134,6 +135,29 @@
         </div>
     </div>
 </div>
+
+<!-- Accept Modal -->
+<div id="acceptModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Approve Return Request</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to approve this return request?</p>
+                <form id="acceptForm">
+                    <input type="hidden" id="acceptRequestId">
+                    <button type="submit" class="btn btn-success">Confirm Approve</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -142,12 +166,16 @@
 <script>
     function openRejectModal(requestId) {
         document.getElementById('rejectRequestId').value = requestId;
-        $('#rejectModal').modal('show'); // This will now work
+        $('#rejectModal').modal('show');
+    }
+
+    function openAcceptModal(requestId) {
+        document.getElementById('acceptRequestId').value = requestId;
+        $('#acceptModal').modal('show');
     }
 
     document.getElementById('rejectForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-
         const requestId = document.getElementById('rejectRequestId').value;
         const rejectReason = document.getElementById('rejectReason').value;
 
@@ -163,6 +191,23 @@
             location.reload();
         } else {
             alert('Error rejecting return request.');
+        }
+    });
+
+    document.getElementById('acceptForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const requestId = document.getElementById('acceptRequestId').value;
+
+        const response = await fetch('/admin/return/approve/' + requestId, {
+            method: 'GET',
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Return request approved successfully!');
+            location.reload();
+        } else {
+            alert('Error approving return request.');
         }
     });
 </script>

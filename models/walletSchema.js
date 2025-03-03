@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const walletSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Corrected reference
+    ref: "User",
     required: true,
     unique: true,
   },
@@ -15,7 +15,7 @@ const walletSchema = new mongoose.Schema({
     {
       transaction_id: {
         type: String,
-        required: true, // Ensure every transaction has an ID
+        required: true,
       },
       amount: {
         type: Number,

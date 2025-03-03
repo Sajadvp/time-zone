@@ -1303,7 +1303,17 @@ window.onclick = function(event) {
                              paymentSuccessHandler(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
 
                             },
-                            prefill: {
+                          modal: {
+                ondismiss: async function () {
+                console.log("Payment modal closed by user.");
+                           Swal.fire({
+                                    icon: 'error',
+                                    title: 'Payment Failed!',
+                                    text: 'Complete your payment or try another payment method',
+                                }) 
+                }
+                },
+                           prefill: {
                                 name: 'Customer Name',
                                 email: 'customer@example.com',
                                 contact: '9876543210',

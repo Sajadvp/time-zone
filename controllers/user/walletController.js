@@ -17,7 +17,6 @@ module.exports = {
 
             let balance = 0;
 
-            // If wallet exists, assign the balance
             if (wallet) {
                 balance = wallet.balance;
             }
@@ -25,7 +24,7 @@ module.exports = {
             console.log("Wallet Balance:", balance);
 
             // Render the wallet page with the balance
-            res.render("user/wallet", { balance });
+            res.render("user/wallet", { wallet });
         } catch (error) {
             console.error("Error fetching wallet data:", error);
             res.status(500).send("Internal Server Error");

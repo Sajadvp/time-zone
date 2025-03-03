@@ -420,6 +420,29 @@ placeOrder :async (req, res) => {
                     message: 'Item cannot be cancelled' 
                 });
             }
+
+            if(order.paymentMethod != "Cash on Delivery"){
+               
+                const user = await User.findById(userId);
+                if (user) {
+                    let wallet = await Wallet.findOne({ user: user._id });
+                    if (!wallet) {
+                        wallet = new Wallet({ user: user._id, balance: 0 });
+                    }
+                    
+                    wallet.transactions.push({
+                        transaction_id: `CANCELLED-${Date.now()}`,
+                        amount: item.discountedPrice * item.quantity,
+                        type: 'credit',
+                        description: `Cancelled item ${itemId} order ${orderId}`
+                    });
+                    
+                    wallet.balance += item.discountedPrice * item.quantity;
+                    await wallet.save();
+                }
+            }
+
+           
     
             item.status = 'Cancelled';
             
@@ -428,8 +451,10 @@ placeOrder :async (req, res) => {
                 product.stockQuantity += item.quantity;
                 await product.save();
             }
+
     
             await order.save();
+
     
             const allCancelled = order.items.every(i => i.status === 'Cancelled');
             if (allCancelled) {
