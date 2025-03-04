@@ -493,23 +493,15 @@
                                 <% } %>
                             </div>
                             <div class="product-info">
-                                <h3 class="product-name"><%= item.productId.productName %></h3>
-                                <div class="price-details">
-                                    <span class="original-price">₹<%= item.price %></span>
-                                    <% if(item.discountedPrice < item.price) { %>
-                                        <span class="discounted-price">₹<%= item.discountedPrice %></span>
-                                        <span class="discount-percent">
-                                            (<%= Math.round(((item.price - item.discountedPrice)/item.price)*100) %>% off)
-                                        </span>
-                                    <% } %>
-                                </div>
-                                <div class="quantity-status">
-                                    <span class="quantity">Quantity: <%= item.quantity %></span>
-                                    <span class="item-status status-<%= item.status.toLowerCase() %>">
-                                        <%= item.status %>
-                                    </span>
-                                </div>
-                            </div>
+                              <h3 class="product-name">
+                                  <% if (item.productId) { %>
+                                      <%= item.productId.productName %>
+                                  <% } else { %>
+                                      Product Not Available
+                                  <% } %>
+                              </h3>
+                          </div>
+                          
                         </div>
                     <% }) %>
     
