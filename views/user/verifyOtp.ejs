@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OTP Verification</title>
-  <!-- Include SweetAlert CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
   <style>
     body {
@@ -105,7 +104,6 @@
       color: #888;
     }
 
-    /* Custom SweetAlert styles */
     .swal2-title-custom {
       font-size: 16px;
     }
@@ -115,7 +113,6 @@
       margin-top: 20px;
     }
 
-    /* Add media query for responsive design */
     @media (max-width: 480px) {
       .otp-inputs {
         flex-direction: column;
@@ -154,17 +151,18 @@
     </form>
   </div>
 
-  <!-- Include SweetAlert JS -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
     const otpInputs = document.querySelectorAll(".otp-input");
     const resendBtn = document.getElementById("resend-btn");
     const timerDisplay = document.getElementById("timer");
+    const otpForm = document.getElementById("otp-form");
 
-    const TIMER_DURATION = 30; // Timer duration in seconds
+    const TIMER_DURATION = 30;
+    let timer = TIMER_DURATION;
     let interval;
 
-    // Focus logic for OTP inputs
+    // Input navigation
     otpInputs.forEach((input, index) => {
       input.addEventListener("input", (e) => {
         if (e.target.value.length === 1 && index < otpInputs.length - 1) {
@@ -179,17 +177,12 @@
       });
     });
 
-    // Start timer for resend button
+    // Timer function
     function startTimer() {
       const expiryTime = localStorage.getItem("otpExpiryTime");
-
       if (expiryTime) {
         const remainingTime = Math.floor((new Date(expiryTime) - new Date()) / 1000);
-        if (remainingTime > 0) {
-          timer = remainingTime;
-        } else {
-          timer = 0;
-        }
+        timer = remainingTime > 0 ? remainingTime : 0;
       } else {
         const expiryTime = new Date(new Date().getTime() + TIMER_DURATION * 1000);
         localStorage.setItem("otpExpiryTime", expiryTime);
@@ -204,63 +197,58 @@
           clearInterval(interval);
           resendBtn.disabled = false;
           timerDisplay.textContent = "You can now resend the OTP.";
-          localStorage.removeItem("otpExpiryTime"); // Clear timer data
+          localStorage.removeItem("otpExpiryTime");
         }
       }, 1000);
     }
 
-    // Resend button logic
+    // Resend OTP
     resendBtn.addEventListener("click", async () => {
       resendBtn.disabled = true;
-      localStorage.removeItem("otpExpiryTime"); // Reset timer state
+      localStorage.removeItem("otpExpiryTime");
       const expiryTime = new Date(new Date().getTime() + TIMER_DURATION * 1000);
       localStorage.setItem("otpExpiryTime", expiryTime);
-      startTimer();
 
       try {
         const response = await fetch("/resendOtp", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}),
         });
 
         if (response.ok) {
-          // Show SweetAlert notification
+          startTimer();
           Swal.fire({
-            position: "top-center", // Position at the top center
+            position: "top-center",
             icon: "success",
             title: "OTP Resent Successfully!",
             showConfirmButton: false,
-            timer: 1500, // Auto-close after 1.5 seconds
-            toast: true, // Display as a toast notification
-            background: "#f8f9fa", // Light background
-            customClass: {
-              title: "swal2-title-custom", // Custom class for the title
-            },
+            timer: 1500,
+            toast: true,
+            background: "#f8f9fa",
+            customClass: { title: "swal2-title-custom" },
           });
         } else {
           const errorData = await response.json();
           Swal.fire({
             icon: "error",
             title: "Error",
-            text: errorData.message || "Something went wrong. Please try again.",
+            text: errorData.message || "Failed to resend OTP",
+            background: "#f8f9fa",
           });
         }
       } catch (error) {
         Swal.fire({
           icon: "error",
           title: "Error",
-          text: "An error occurred. Please try again.",
+          text: "An error occurred while resending OTP",
+          background: "#f8f9fa",
         });
         console.error("Error resending OTP:", error);
       }
     });
 
-    // Form submission logic
-    const otpForm = document.getElementById("otp-form");
-
+    // Form submission
     otpForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const otp = Array.from(otpInputs).map((input) => input.value).join("");
@@ -269,35 +257,54 @@
         try {
           const response = await fetch("/verifyOtp", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ otp }),
           });
 
-          if (response.ok) {
-            const data = await response.json();
+          const data = await response.json();
 
-            if (data.success) {
-              localStorage.removeItem("otpExpiryTime"); 
-              alert("OTP verified successfully!");
-              window.location.href = data.redirectUrl;
-            }
-
+          if (response.ok && data.success) {
+            localStorage.removeItem("otpExpiryTime");
+            await Swal.fire({
+              icon: "success",
+              title: "Success!",
+              text: "OTP verified successfully!",
+              showConfirmButton: false,
+              timer: 1500,
+              position: "center",
+              background: "#f8f9fa",
+            });
+            window.location.href = data.redirectUrl;
           } else {
-            const errorData = await response.json();
-            alert(errorData.message || "Invalid OTP. Please try again.");
+            await Swal.fire({
+              icon: "error",
+              title: "Verification Failed",
+              text: data.message || "Invalid OTP. Please try again.",
+              confirmButtonColor: "#007bff",
+              background: "#f8f9fa",
+            });
           }
         } catch (error) {
-          alert("An error occurred. Please try again.");
+          await Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An error occurred. Please try again.",
+            confirmButtonColor: "#007bff",
+            background: "#f8f9fa",
+          });
           console.error("Error during OTP verification:", error);
         }
       } else {
-        alert("Please fill in all OTP fields.");
+        Swal.fire({
+          icon: "warning",
+          title: "Incomplete OTP",
+          text: "Please fill in all OTP fields.",
+          confirmButtonColor: "#007bff",
+          background: "#f8f9fa",
+        });
       }
     });
 
-    // Initialize timer on page load
     startTimer();
   </script>
 </body>

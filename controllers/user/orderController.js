@@ -317,6 +317,20 @@ placeOrder :async (req, res) => {
     
             // Clear session temp order
             req.session.tempOrder = null;
+
+            if (req.session.coupon) {
+                console.log("=========Coupon pushed=========");
+                const coupon = req.session.coupon;
+                await User.findByIdAndUpdate(
+                    userId,
+                    { $push: { appliedCoupons: coupon.couponCode } }, 
+                    { new: true }
+                );
+            }
+    
+            if (req.session.coupon) {
+                delete req.session.coupon;
+            }
     
             res.json({ success: true, message: 'Payment successful and order placed', orderId: order._id, orderDetails: order });
         } catch (error) {

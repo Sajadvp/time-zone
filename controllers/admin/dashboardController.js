@@ -94,13 +94,13 @@ function generatePDF(data, filePath, callback) {
     doc.fontSize(12).font('Helvetica');
 
     if (data.totalSales !== undefined) {
-        doc.text(`Total Sales: ₹ ${data.totalSales.toFixed(2)}`);
+        doc.text(`Total Sales: \u20B9 ${data.totalSales.toFixed(2)}`);
     }
     if (data.totalOrders !== undefined) {
         doc.text(`Total Orders: ${data.totalOrders}`);
     }
     if (data.totalDiscount !== undefined) {
-        doc.text(`Total Discount: ₹ ${data.totalDiscount.toFixed(2)}`);
+        doc.text(`Total Discount: \u20B9 ${data.totalDiscount.toFixed(2)}`);
     }
     doc.moveDown(1.5);
 
